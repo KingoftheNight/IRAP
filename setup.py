@@ -7,7 +7,7 @@ setup(name='irap',
     url='https://github.com/KingoftheNight/IRAP',
     author='liangyc',
     author_email='1694822092@qq.com',
-    license='BSD 2-Clause',
+    license='LICENSE',
     packages=['irap'],
     install_requires=[
         'numpy',
