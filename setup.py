@@ -4,7 +4,7 @@ from irap.__init__ import __version__
 setup(name='irap',
     version=__version__,
     description='an intelligent protein analysis toolkit based on raac and pssm ',
-    url='https://github.com/KingoftheNight/irap',
+    url='https://github.com/KingoftheNight/IRAP',
     author='liangyc',
     author_email='1694822092@qq.com',
     license='BSD 2-Clause',
