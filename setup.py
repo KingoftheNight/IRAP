@@ -8,7 +8,7 @@ setup(name='irap',
     author='liangyc',
     author_email='1694822092@qq.com',
     license='BSD 2-Clause',
-    packages=find_packages('irap'),
+    packages=['irap']
     install_requires=[
         'numpy',
         'matplotlib',
