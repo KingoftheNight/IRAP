@@ -5,7 +5,7 @@ import numpy as np
 import sys
 read_path = os.path.dirname(__file__)
 sys.path.append(read_path)
-from Visual import easy_time, visual_block, visual_box
+from Visual import easy_time, visual_box
 
 
 # functions
@@ -37,7 +37,7 @@ def read_fasta(file, out, now_path):
         if '>' in filelist[line]:
             order += 1
             if line < len(filelist):
-                with open(os.path.join(out_path, str(order) + '.fasta'), 'w') as f:
+                with open(os.path.join(out_path, filelist[line][1:] + '.fasta'), 'w') as f:
                     f.write(filelist[line] + '\n' + filelist[line + 1])
 
 
@@ -115,6 +115,50 @@ def read_pssm(path, pssm_matrixes, pssm_aaid, pssm_type, type_p):
         pssm_aaid.append(aa_id)
         pssm_type.append(type_p)
     return copy.deepcopy(pssm_matrixes), copy.deepcopy(pssm_aaid), copy.deepcopy(pssm_type)
+
+
+def read_pssm_site(path, pssm_matrixes, pssm_aaid, pssm_type, site):
+    with open(site, 'r') as f:
+        site_data = f.readlines()
+    site_dic = {}
+    for i in range(len(site_data) - 1):
+        line = site_data[i].strip('\n')
+        if '>' in line:
+            mid = site_data[i + 1].strip('\n').split('-')
+            site_dic[line[1:]] = [ int(x) for x in mid ]
+    start_e = 0
+    file_list = os.listdir(path)
+    for i in range(len(file_list)):
+        start_e += 1
+        easy_time(start_e, len(file_list))
+        eachfile = file_list[i]
+        with open(os.path.join(path, eachfile), 'r') as f1:
+            data = f1.readlines()
+        matrix = []
+        aa_id = []
+        end_matrix = 0
+        for j in data:
+            if 'Lambda' in j and 'K' in j:
+                end_matrix = data.index(j)
+                break
+        mid = []
+        for p in range(len(data[3:end_matrix - 1])):
+            eachline = data[3:end_matrix - 1][p]
+            row = eachline.split()
+            newrow = row[0:22]
+            for k in range(2, len(newrow)):
+                newrow[k] = int(newrow[k])
+            nextrow = newrow[2:]
+            matrix.append(nextrow)
+            aa_id.append(newrow[1])
+            if (p + 1) in site_dic[eachfile]:
+                mid.append('0')
+            else:
+                mid.append('1')
+        pssm_matrixes.append(matrix)
+        pssm_aaid.append(aa_id)
+        pssm_type.append(mid)
+    return pssm_matrixes, pssm_aaid, pssm_type
 
 
 def read_filter(file, filter_index, out, number, now_path):

@@ -20,6 +20,14 @@ def visual_box(i):
     return out
 
 
+# single level box
+def visual_box_site(i, p):
+    out = []
+    for k in range(i):
+        out.append(p)
+    return out
+
+
 # multy level box
 def visual_mulbox(i, j):
     out = []
