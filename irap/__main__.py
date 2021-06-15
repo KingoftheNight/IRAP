@@ -9,6 +9,7 @@ try:
     from . import Read
     from . import Blast
     from . import Extract
+    from . import Extract_site
     from . import TES
     from . import Plot
     from . import Filter
@@ -45,35 +46,33 @@ def parse_checkdb(args):
 # read
 def parse_read(args):
     print('\n>>>Reading files...\n')
-    if len(args.file) == len(args.output):
-        for eachdir in range(len(args.file)):
-            Read.read_fasta(args.file[eachdir], args.output[eachdir], now_path)
-    else:
-        print('\n>>>ERROR: The number of input files and output folders is not equal.\n')
+    Read.read_fasta(args.document[0], args.output[0], now_path)
 
 
 # psi-blast
 def parse_blast(args):
     print('\n>>>Blasting PSSM matrix...\n')
-    if len(args.folder) == len(args.output):
-        for eachdir in range(len(args.folder)):
-            if(platform.system()=='Linux'):
-                Blast.blast_psiblast_linux(args.folder[eachdir], args.database[0], args.num_iterations[0],
-                                           args.expected_value[0], args.output[eachdir], now_path)
-            if(platform.system()=='Windows'):
-                Blast.blast_psiblast_windows(args.folder[eachdir], args.database[0], args.num_iterations[0],
-                                           args.expected_value[0], args.output[eachdir], now_path)
-    else:
-        print('\n>>>ERROR: The number of input folders and output folders is not equal.\n')
+    if(platform.system()=='Linux'):
+        Blast.blast_psiblast_linux(args.folder[0], args.database[0], args.num_iterations[0],
+                                   args.expected_value[0], args.output[0], now_path)
+    if(platform.system()=='Windows'):
+        Blast.blast_psiblast_windows(args.folder[0], args.database[0], args.num_iterations[0],
+                                   args.expected_value[0], args.output[0], now_path)
 
 
 # extract features
 def parse_extract(args):
     print('\n>>>Extracting PSSM matrix features...\n')
     if args.reduce_aa:
-        Extract.extract_main(args.folder[0], args.folder[1], args.output[0], args.reduce_aa[0], args.lmda[0], now_path)
+        if args.site:
+            Extract_site.extract_main_site(args.folder[0], args.folder[1], args.output[0], args.reduce_aa[0], args.lmda[0], now_path)
+        else:
+            Extract.extract_main(args.folder[0], args.folder[1], args.output[0], args.reduce_aa[0], args.lmda[0], now_path)
     else:
-        Extract.extract_main(args.folder[0], args.folder[1], 'none', args.self_raac[0], args.lmda[0], now_path)
+        if args.site:
+            Extract_site.extract_main_site(args.folder[0], args.folder[1], 'none', args.self_raac[0], args.lmda[0], now_path)
+        else:
+            Extract.extract_main(args.folder[0], args.folder[1], 'none', args.self_raac[0], args.lmda[0], now_path)
 
 
 # search best factors
@@ -187,16 +186,16 @@ def rpct_main():
     parser_cd.set_defaults(func=parse_checkdb)
     # read and segment original files
     parser_re = subparsers.add_parser('read', add_help=False, help='read protein sequences files and segment it')
-    parser_re.add_argument('file', nargs='+', help='fasta file paths')
-    parser_re.add_argument('-o', '--output', nargs='+', help='output folder')
+    parser_re.add_argument('-d', '--document', nargs=1, help='fasta file paths')
+    parser_re.add_argument('-o', '--output', nargs=1, help='output folder')
     parser_re.set_defaults(func=parse_read)
     # blast PSSM matrix
     parser_bl = subparsers.add_parser('blast', add_help=False, help='get PSSM matrix by psi-blast')
-    parser_bl.add_argument('folder', nargs='+', help='input a folder containing single sequence files')
+    parser_bl.add_argument('-f', '--folder', nargs=1, help='input a folder containing single sequence files')
     parser_bl.add_argument('-db', '--database', nargs=1, type=str, help='database for blast')
     parser_bl.add_argument('-n', '--num_iterations', nargs=1, type=str, help='number of blast cycles')
     parser_bl.add_argument('-ev', '--expected_value', nargs=1, type=str, help='expected value of blast cycles')
-    parser_bl.add_argument('-o', '--output', nargs='+', help='output folder')
+    parser_bl.add_argument('-o', '--output', nargs=1, help='output folder')
     parser_bl.set_defaults(func=parse_blast)
     # extract features
     parser_ex = subparsers.add_parser('extract', add_help=False, help='extract the features of PSSM matrix')
@@ -205,6 +204,7 @@ def rpct_main():
     parser_ex.add_argument('-o', '--output', nargs=1, type=str, help='output folder')
     parser_ex.add_argument('-l', '--lmda', nargs=1, type=str, help='sliding window lmda')
     parser_ex.add_argument('-r', '--self_raac', nargs=1, type=str, help='self raac')
+    parser_ex.add_argument('-s', '--site', nargs=1, type=str, help='site mode')
     parser_ex.set_defaults(func=parse_extract)
     # grid search
     parser_se = subparsers.add_parser('search', add_help=False, help='search c_number and gamma for training')
@@ -321,4 +321,3 @@ def rpct_main():
 # main ########################################################################
 if __name__ == '__main__':
     rpct_main()
-
