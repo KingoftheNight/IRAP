@@ -1,24 +1,18 @@
 from setuptools import setup
-from irap.__init__ import __version__
+from easyraac.Version import version
 
 setup(name='irap',
-    version=__version__,
-    description='an intelligent protein analysis toolkit based on raac and pssm ',
+    version=version,
+    description='Intelligent RAAC-PSSM Protein Prediction Package',
     url='https://github.com/KingoftheNight/IRAP',
-    author='liangyc',
+    author='Liang YC',
     author_email='1694822092@qq.com',
-    license='LICENSE',
+    license='BSD 2-Clause',
     packages=['irap'],
-    install_requires=[
-        'numpy',
-        'matplotlib',
-        'scikit-learn',
-        'seaborn==0.10.1',
-        'pyecharts'
-        ],
+    install_requires=[],
     entry_points={
         'console_scripts': [
-        'irap=irap.__main__:rpct_main',
+        'irap=irap.__main__:irap',
             ]
         },
     python_requires=">=3.6",
