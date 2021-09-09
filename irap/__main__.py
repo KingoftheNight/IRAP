@@ -14,3 +14,7 @@ def irap():
     Visual.visual_create_blast(file_path)
     Visual.visual_create_aaindex(file_path)
     Visual.visual_create_raac(file_path)
+
+# main
+if __name__ == '__main__':
+    irap()
