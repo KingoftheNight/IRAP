@@ -1,5 +1,5 @@
 from setuptools import setup
-from easyraac.Version import version
+from irap.Version import version
 
 setup(name='irap',
     version=version,
