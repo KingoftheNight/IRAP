@@ -33,3 +33,42 @@ def visual_create_raac(file_path):
             f.write(content)
         with open(os.path.join(os.path.join(file_path, 'raacDB'), 'minCODE'), 'w') as f:
             f.write(minicontent)
+
+
+# create n x n matrix
+def visual_create_nn_matrix(x=20, y=20, fill=0):
+    out = []
+    for i in range(x):
+        mid = []
+        for j in range(y):
+            mid.append(fill)
+        out.append(mid)
+    return out
+
+
+# create n matrix
+def visual_create_n_matrix(x=20, fill=0):
+    out = []
+    for i in range(x):
+        out.append(fill)
+    return out
+
+
+# create aa index
+def visual_create_aa():
+    return ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
+
+
+# time
+def visual_easy_time(start_e, end_e):
+    print('\r>>>' + str(start_e) + "~" + str(end_e), end='', flush=True)
+
+
+# detal time
+def visual_detal_time(start_e, end_e, start_n, end_n):
+    print('\r>>>' + str(start_e) + "~" + str(end_e) + '---' + str(start_n) + "~" + str(end_n), end='', flush=True)
+
+
+# detal eval result
+def visual_eval_analize():
+    return "预测成功率(Accuracy, Acc):\n\nAcc = (TP + TN) / (TP + FP + TN + FN)\n\n敏感度(Sensitivity, SN)也称召回率(Recall, RE):\n\nSn = Recall = TP / (TP + FN)\n\n特异性(Specificity, SP):\n\nSp = TN / (TN + FP)\n\n精确率(Precision, PR)也称阳极预测值(Positive Predictive Value, PPV):\n\nPrecision= PPV = TP / (TP + FP)\n\nMatthew 相关系数(Matthew's correlation coefficient, Mcc):\n\nMCC = (TP*TN- FP*FN)/sqrt((TP + FP)*(TN + FN)*(TP + FN)*(TN + FP)).其中sqrt代表开平方."

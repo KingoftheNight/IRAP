@@ -1,13 +1,16 @@
 # import package
 import os
+now_path = os.getcwd()
 import numpy as np
 import urllib.request
 file_path = os.path.dirname(__file__)
+from irap import SVM as isvm
 import tarfile
+import gzip
 
 
-# read svm file
-def read_svmfile(file):
+# load svm file
+def load_svmfile(file):
     with open(file, 'r') as f1:
         file = f1.readlines()
     # 提取特征list
@@ -27,8 +30,26 @@ def read_svmfile(file):
     return np_data, np_label
 
 
-# read sequence data set
-def read_fasta(file, out=None):
+# load svm path from numpy
+def load_np_path(np_data, np_label, out=now_path):
+    file = ''
+    for i in range(len(np_label)):
+        mid = str(np_label[i])
+        for j in range(len(np_data[i])):
+            mid += ' ' + str(j+1) + ':' + str(np_data[i,j])
+        file += mid + '\n'
+    if out != now_path:
+        with open(out, 'w') as f:
+            f.write(file[:-1])
+        return out
+    else:
+        with open(os.path.join(now_path, 'save_file.txt'), 'w') as f:
+            f.write(file[:-1])
+        return os.path.join(now_path, 'save_file.txt')
+
+
+# load sequence data set
+def load_fasta(file, out=None):
     with open(file, 'r') as u:
         lines = u.readlines()
     result = ''
@@ -58,8 +79,34 @@ def read_fasta(file, out=None):
         return path
 
 
-# read raac dictionary
-def read_raac(file):
+# load sequence data set to default folder
+def load_fasta_folder(file=None, out='positive'):
+    if file != None:    
+        sq_path = os.path.join(now_path, 'Reads')
+        if 'Reads' not in os.listdir(now_path):
+            os.makedirs(sq_path)
+        next_path = os.path.join(sq_path, out)
+        if out not in os.listdir(sq_path):
+            os.makedirs(next_path)
+        sq = load_fasta(file, out=next_path)
+        return sq
+    else:
+        sq = []
+        for i in os.listdir(out):
+            sq.append(os.path.join(out, i))
+        return sq
+
+
+# reload pssm folder
+def load_reload_pssm(path):
+    pssm = []
+    for i in os.listdir(path):
+        pssm.append(os.path.join(path, i))
+    return pssm
+
+
+# load raac dictionary
+def load_raac(file):
     with open(file, 'r') as code:
         raacode = code.readlines()
     raa_dict = {}
@@ -68,13 +115,21 @@ def read_raac(file):
         each_com = eachline.strip('\n').split()
         raa_com = each_com[-1].split('-')
         raa_ts = 't' + each_com[1] + 's' + each_com[3]
+        raa_id = str(raacode.index(eachline))
+        if len(raa_id) == 1:
+            raa_id = '000' + raa_id
+        if len(raa_id) == 2:
+            raa_id = '00' + raa_id
+        if len(raa_id) == 3:
+            raa_id = '0' + raa_id
+        raa_ts = raa_id + '&' + raa_ts
         raa_dict[raa_ts] = raa_com
         raa_index.append(raa_ts)
     return raa_dict, raa_index
 
 
 # read pssm matrix
-def read_pssm(path):
+def load_pssm(path):
     with open(path, 'r') as f:
         data = f.readlines()
     matrix = []
@@ -95,8 +150,8 @@ def read_pssm(path):
     return matrix, aa_id
 
 
-# extract selected feature of svm file
-def extract_svm_feature(file, filter_index, number, out=None):
+# load selected feature of svm file
+def load_svm_feature(file, filter_index, number, out=None):
     # 读取特征排序以及特征文件
     with open(filter_index, 'r', encoding='UTF-8') as f:
         data = f.readlines()
@@ -135,8 +190,8 @@ def extract_svm_feature(file, filter_index, number, out=None):
         return out_matrix, out_type
 
 
-# extract selected feature of numpy
-def extract_numpy_feature(matrix, type_f, number, index=None, out=None):
+# load selected feature of numpy
+def load_numpy_feature(matrix, type_f, number, index=None, out=None):
     if index == None:
         out_type = np.zeros(len(type_f))
         out_matrix = np.zeros([len(matrix), number])
@@ -167,12 +222,12 @@ def extract_numpy_feature(matrix, type_f, number, index=None, out=None):
 
 
 # read hyperparameters file
-def read_hys(file):
+def load_hys(file):
     with open(file, 'r') as f:
         data = f.readlines()
     cg_box = {}
     for i in data:
-        cg_box[i.split('\t')[0]] = [i.split('\t')[1].split(': ')[-1], i.split('\t')[2].split(': ')[-1]]
+        cg_box[i.strip('\n').split('\t')[0]] = [float(i.strip('\n').split('\t')[1].split(': ')[-1]), float(i.strip('\n').split('\t')[2].split(': ')[-1])]
     return cg_box
 
 
@@ -221,20 +276,65 @@ def read_weblogo_main(matrix):
 
 # load blast database
 def load_pdbaa():
+    def un_gz(file_name):
+        f_name = file_name.strip(".gz")
+        g_file = gzip.GzipFile(file_name)
+        open(f_name, "wb+").write(g_file.read())
+        g_file.close()
     if 'pdbaa.pdb' not in os.listdir(os.path.join(file_path, 'blastDB')):
         url = 'https://ftp.ncbi.nlm.nih.gov/blast/db/pdbaa.tar.gz'
-        save_path = os.path.join(file_path, 'pdbaa')
-        urllib.request.urlretrieve(url, filename=save_path)
-        t = tarfile.open(save_path)
+        save_path = os.path.join(file_path, 'pdbaa.tar.gz')
+        if 'pdbaa.tar.gz' not in os.listdir(file_path):
+            urllib.request.urlretrieve(url, filename=save_path)
+        un_gz(save_path)
+        t = tarfile.open(save_path.strip(".gz"))
         t.extractall(path=os.path.join(file_path, 'blastDB'))
-    
+        t.close()
+        os.remove(save_path.strip(".gz"))
+    else:
+        print('\npdbaa database has been loaded successfully!')
 
 
+# save the feature file to model file
+def load_model_save_file(file, c=8, g=0.125, out=now_path):
+    if out != now_path:
+        isvm.svm_train(file, c, g, out)
+        return out
+    else:
+        isvm.svm_train(file, c, g, os.path.join(out, 'models.model'))
+        return os.path.join(out, 'models.model')
 
 
-
-
-
+# save the feature folder to model folder
+def load_model_save_folder(path, cg=None, out=now_path):
+    model_path = []
+    if out != now_path:
+        if os.path.split(out)[-1] not in os.listdir(os.path.split(out)[0]):
+            os.makedirs(out)
+        if cg != None:
+            cg_box = load_hys(cg)
+            for i in path:
+                if cg_box[i][1] == 0:
+                    cg_box[i][1] = 0.01
+                isvm.svm_train(i, cg_box[i][0], cg_box[i][1], os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
+                model_path.append(os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
+        else:
+            for i in path:
+                isvm.svm_train(i, 8, 0.125, os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
+                model_path.append(os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
+    else:
+        if cg != None:
+            cg_box = load_hys(cg)
+            for i in path:
+                if cg_box[i][1] == 0:
+                    cg_box[i][1] = 0.01
+                isvm.svm_train(i, cg_box[i][0], cg_box[i][1], os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
+                model_path.append(os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
+        else:
+            for i in path:
+                isvm.svm_train(i, 8, 0.125, os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
+                model_path.append(os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
+    return model_path
 
 
 
