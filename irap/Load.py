@@ -4,7 +4,7 @@ now_path = os.getcwd()
 import numpy as np
 import urllib.request
 file_path = os.path.dirname(__file__)
-from irap import SVM as isvm
+import SVM as isvm
 import tarfile
 import gzip
 
@@ -12,11 +12,11 @@ import gzip
 # load svm file
 def load_svmfile(file):
     with open(file, 'r') as f1:
-        file = f1.readlines()
+        data = f1.readlines()
     # 提取特征list
     features = []
     features_label = []
-    for i in file:
+    for i in data:
         line = i.strip('\n').split(' ')
         fs_box = line[1:]
         mid_box = []
@@ -122,7 +122,7 @@ def load_raac(file):
             raa_id = '00' + raa_id
         if len(raa_id) == 3:
             raa_id = '0' + raa_id
-        raa_ts = raa_id + '&' + raa_ts
+        raa_ts = raa_id + '-' + raa_ts
         raa_dict[raa_ts] = raa_com
         raa_index.append(raa_ts)
     return raa_dict, raa_index
@@ -337,19 +337,16 @@ def load_model_save_folder(path, cg=None, out=now_path):
     return model_path
 
 
+# reload feature folder
+def load_reload_feature(path):
+    pssm_path = []
+    for i in os.listdir(path):
+        pssm_path.append(os.path.join(path, i))
+    return pssm_path
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# load precaution
+def load_precaution():
+    with open(os.path.join(file_path, 'README'), 'r', encoding='UTF-8') as f:
+        prec_data = f.read()
+    return prec_data

@@ -3,11 +3,11 @@ import os
 import numpy as np
 import pandas as pd
 now_path = os.getcwd()
-from irap import Load as iload
-from irap import Visual as ivis
-from irap import SVM as isvm
-from irap import Eval as ieval
-from irap import Plot as iplot
+import Load as iload
+import Visual as ivis
+import SVM as isvm
+import Evaluate as ieval
+import Plot as iplot
 import math
 import random
 from sklearn.decomposition import PCA
@@ -17,6 +17,7 @@ from sklearn.preprocessing import MinMaxScaler
 # PCA #########################################################################
 # 特征组合测试
 def select_test(data, label, feature, c_number, gamma, crossv, now_path):
+    
     fs_acc = []
     filter_data = []
     for k in label:
@@ -34,7 +35,7 @@ def select_test(data, label, feature, c_number, gamma, crossv, now_path):
             ot.write(out_content)
         test_label, predict_label = isvm.svm_evaluate(os.path.join(now_path, 'mid-ifs'),
                                                  float(c_number), float(gamma), int(crossv))
-        standard_num = ieval.eval_score(test_label, predict_label)
+        standard_num = ieval.evaluate_score(test_label, predict_label)
         single_acc = round(standard_num[4], 3)
         fs_acc.append(single_acc)
         os.remove('./mid-ifs')

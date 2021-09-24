@@ -1,8 +1,8 @@
 # import package
 import os
-from irap import Load as iload
-from irap import Visual as ivis
-from irap import Feature as ifeat
+import Load as iload
+import Visual as ivis
+import Feature as ifeat
 file_path = os.path.dirname(__file__)
 raac_path = os.path.join(file_path, 'raacDB')
 now_path = os.getcwd()
@@ -180,7 +180,7 @@ def extract_pssm(method=[0,1,2,3,4,5,6], pos=None, neg=None, reduce=False, raaBo
         if reduce != False and raaBook != None:
             raac_pssm_fs, raac_kpssm_fs, raac_dtpssm_fs, raac_sw_fs, raac_kmer_fs, raac_saac_fs, raac_oaac_fs = [], [], [], [], [], [], []
             raacode = iload.load_raac(os.path.join(raac_path, raaBook))
-            method_id = '&'
+            method_id = '-'
             # RAAC-PSSM
             if 0 in method:
                 raac_pssm_fs = extract_reduce(pos_matrix + neg_matrix, pos_aaid + neg_aaid, raaBook, raacode)
@@ -220,11 +220,11 @@ def extract_pssm(method=[0,1,2,3,4,5,6], pos=None, neg=None, reduce=False, raaBo
             pssm_path = extract_combine([raac_pssm_fs, raac_kpssm_fs, raac_dtpssm_fs, raac_sw_fs, raac_kmer_fs, raac_saac_fs, raac_oaac_fs], pos_type + neg_type, out, reduce, raacode, method_id)
             return pssm_path
         else:
-            raac_pssm_fs = extract_reduce_row(pos_matrix + neg_matrix, pos_aaid + neg_aaid, 'raaCODE', '0000&t0s20')
-            raac_pssm_fs = extract_reduce_col(raac_pssm_fs, 'raaCODE', '0000&t0s20')
+            raac_pssm_fs = extract_reduce_row(pos_matrix + neg_matrix, pos_aaid + neg_aaid, 'raaCODE', '0000-t0s20')
+            raac_pssm_fs = extract_reduce_col(raac_pssm_fs, 'raaCODE', '0000-t0s20')
             raac_pssm_fs = extract_scale(raac_pssm_fs)
             raac_pssm_fs = extract_one(raac_pssm_fs)
-            file = extract_save(raac_pssm_fs, pos_type + neg_type, out, '0000&t0s20', '&0')
+            file = extract_save(raac_pssm_fs, pos_type + neg_type, out, '0000-t0s20', '&0')
             pssm_path.append(file)
             return pssm_path
     elif pos != None and neg == None:
@@ -232,7 +232,7 @@ def extract_pssm(method=[0,1,2,3,4,5,6], pos=None, neg=None, reduce=False, raaBo
         if reduce != False and raaBook != None:
             raac_pssm_fs, raac_kpssm_fs, raac_dtpssm_fs, raac_sw_fs, raac_kmer_fs, raac_saac_fs, raac_oaac_fs = [], [], [], [], [], [], []
             raacode = iload.load_raac(os.path.join(raac_path, raaBook))
-            method_id = '&'
+            method_id = '-'
             # RAAC-PSSM
             if 0 in method:
                 raac_pssm_fs = extract_reduce(pos_matrix, pos_aaid, raaBook, raacode)
@@ -272,11 +272,11 @@ def extract_pssm(method=[0,1,2,3,4,5,6], pos=None, neg=None, reduce=False, raaBo
             pssm_path = extract_combine([raac_pssm_fs, raac_kpssm_fs, raac_dtpssm_fs, raac_sw_fs, raac_kmer_fs, raac_saac_fs, raac_oaac_fs], pos_type, out, reduce, raacode, method_id)
             return pssm_path
         else:
-            raac_pssm_fs = extract_reduce_row(pos_matrix, pos_aaid, 'raaCODE', '0000&t0s20')
-            raac_pssm_fs = extract_reduce_col(raac_pssm_fs, 'raaCODE', '0000&t0s20')
+            raac_pssm_fs = extract_reduce_row(pos_matrix, pos_aaid, 'raaCODE', '0000-t0s20')
+            raac_pssm_fs = extract_reduce_col(raac_pssm_fs, 'raaCODE', '0000-t0s20')
             raac_pssm_fs = extract_scale(raac_pssm_fs)
             raac_pssm_fs = extract_one(raac_pssm_fs)
-            file = extract_save(raac_pssm_fs, pos_type, out, '0000&t0s20', '&0')
+            file = extract_save(raac_pssm_fs, pos_type, out, '0000-t0s20', '&0')
             pssm_path.append(file)
             return pssm_path
     elif neg != None and pos == None:
@@ -284,7 +284,7 @@ def extract_pssm(method=[0,1,2,3,4,5,6], pos=None, neg=None, reduce=False, raaBo
         if reduce != False and raaBook != None:
             raac_pssm_fs, raac_kpssm_fs, raac_dtpssm_fs, raac_sw_fs, raac_kmer_fs, raac_saac_fs, raac_oaac_fs = [], [], [], [], [], [], []
             raacode = iload.load_raac(os.path.join(raac_path, raaBook))
-            method_id = '&'
+            method_id = '-'
             # RAAC-PSSM
             if 0 in method:
                 raac_pssm_fs = extract_reduce(neg_matrix, neg_aaid, raaBook, raacode)
@@ -324,11 +324,11 @@ def extract_pssm(method=[0,1,2,3,4,5,6], pos=None, neg=None, reduce=False, raaBo
             pssm_path = extract_combine([raac_pssm_fs, raac_kpssm_fs, raac_dtpssm_fs, raac_sw_fs, raac_kmer_fs, raac_saac_fs, raac_oaac_fs], neg_type, out, reduce, raacode, method_id)
             return pssm_path
         else:
-            raac_pssm_fs = extract_reduce_row(neg_matrix, neg_aaid, 'raaCODE', '0000&t0s20')
-            raac_pssm_fs = extract_reduce_col(raac_pssm_fs, 'raaCODE', '0000&t0s20')
+            raac_pssm_fs = extract_reduce_row(neg_matrix, neg_aaid, 'raaCODE', '0000-t0s20')
+            raac_pssm_fs = extract_reduce_col(raac_pssm_fs, 'raaCODE', '0000-t0s20')
             raac_pssm_fs = extract_scale(raac_pssm_fs)
             raac_pssm_fs = extract_one(raac_pssm_fs)
-            file = extract_save(raac_pssm_fs, neg_type, out, '0000&t0s20', '&0')
+            file = extract_save(raac_pssm_fs, neg_type, out, '0000-t0s20', '&0')
             pssm_path.append(file)
             return pssm_path
     else:

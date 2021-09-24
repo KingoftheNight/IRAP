@@ -7,9 +7,13 @@ import math
 import matplotlib.pyplot as plt
 from pyecharts import options as opts
 from pyecharts.charts import Pie
-from irap import Load as iload
-from irap import Feature as ifeat
-from irap import Visual as ivis
+from sklearn import svm
+from sklearn import model_selection
+from sklearn.metrics import roc_curve, auc
+import Load as iload
+import Feature as ifeat
+import Visual as ivis
+now_path = os.getcwd()
 plot_path = os.path.dirname(__file__)
 raac_path = os.path.join(plot_path, 'raacDB')
 
@@ -129,8 +133,8 @@ def plot_select_simple(data, type_p):
 # filter main
 def plot_select(relief_pool, fs_acc, out_path, in_path=None, k=2):
     if in_path != None:
-        size_fs = int(os.path.split(in_path)[-1].split('&')[1].split('s')[-1])
-        method_fs = [ int(x) for x in list(os.path.split(in_path)[-1].split('&')[-1].split('.')[0]) ]
+        size_fs = int(os.path.split(in_path)[-1].split('-')[1].split('s')[-1])
+        method_fs = [ int(x) for x in list(os.path.split(in_path)[-1].split('-')[-1].split('.')[0]) ]
         # ifs
         all_values = plot_select_class(relief_pool, size_fs, method_fs, k)
         plot_select_visual(fs_acc, all_values, 'IFS-Acc\n\n\n')
@@ -228,8 +232,8 @@ def plot_fa_out(out, feature_id):
 # feature analize main
 def plot_feature_analize(fs_sort, fs_acc, fs_weight, out_path, in_path, raaBook='raaCODE', k=2):
     raa_dict = iload.load_raac(os.path.join(raac_path, raaBook))
-    raacode = raa_dict[0][os.path.split(in_path)[-1].split('&')[0]+'&'+os.path.split(in_path)[-1].split('&')[1]]
-    method_fs = [ int(x) for x in list(os.path.split(in_path)[-1].split('&')[-1].split('.')[0]) ]
+    raacode = raa_dict[0][os.path.split(in_path)[-1].split('-')[0]+'-'+os.path.split(in_path)[-1].split('-')[1]]
+    method_fs = [ int(x) for x in list(os.path.split(in_path)[-1].split('-')[-1].split('.')[0]) ]
     # feature id
     feature_id = plot_fa_id(raacode, method_fs, fs_sort, fs_acc, fs_weight, k)
     # 特征可视化
@@ -331,25 +335,41 @@ def plot_evaluate(cluster_t, t_index, out, cluster_s, s_index, eval_value, eval_
     # heatmap
     plot_eval_heatmap(eval_value, eval_key, out, t_s_index, s_s_index)
     
-    
+
+# ROC #########################################################################
+def plot_roc_svm(af_data, af_label, c_number, ga):
+    # 分割数据
+    train_data, test_data, train_label, test_label = model_selection.train_test_split(af_data, af_label, test_size=.3,
+                                                                                      random_state=0)
+    # svm分类训练
+    roc = svm.SVC(kernel='rbf', C=c_number, gamma=ga, probability=True)
+    test_predict_label = roc.fit(train_data, train_label).decision_function(test_data)
+    # roc坐标获取
+    fpr, tpr, threshold = roc_curve(test_label, test_predict_label)
+    roc_auc = auc(fpr, tpr)
+    return fpr, tpr, roc_auc
 
 
+def plot_roc_line(fpr, tpr, roc_auc, out):
+    plt.figure()
+    plt.figure(figsize=(10, 10))
+    lw = 2
+    plt.plot(fpr, tpr, color='darkorange', lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic example')
+    plt.legend(loc="lower right")
+    plt.savefig(out, dpi=300)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# ROC main
+def plot_roc(file, out=now_path, c=8, g=0.125):
+    np_data, np_label = iload.load_svmfile(file)
+    fpr, tpr, roc_auc = plot_roc_svm(np_data, np_label, c, g)
+    if out != now_path:
+        plot_roc_line(fpr, tpr, roc_auc, out)
+    else:
+        plot_roc_line(fpr, tpr, roc_auc, os.path.join(out, 'ROC-cruve.png'))

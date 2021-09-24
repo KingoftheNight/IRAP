@@ -1,7 +1,8 @@
 # import packages
+import os
 from sklearn import svm
 from joblib import dump, load
-from irap import Load as iload
+import Load as iload
 from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection import GridSearchCV
 
@@ -63,6 +64,19 @@ def svm_grid_folder(path, out=False):
         out_box[i] = svm_grid(i)
         if out != False:
             file = i + '\tC_numbr: ' + str(round(out_box[i][0], 4)) + '\tGamma: ' + str(round(out_box[i][1])) + '\n'
+            with open(out, 'a') as f:
+                f.write(file)
+    if out == False:
+        return out_box
+
+
+# create grid file for folder
+def svm_set_hys(path, c=8, g=0.125, out=False):
+    out_box = {}
+    for i in os.listdir(path):
+        out_box[i] = (c, g)
+        if out != False:
+            file = os.path.join(path, i) + '\tC_numbr: ' + str(c) + '\tGamma: ' + str(g) + '\n'
             with open(out, 'a') as f:
                 f.write(file)
     if out == False:

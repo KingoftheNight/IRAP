@@ -1,9 +1,9 @@
 # import packages
 import os
-from irap import Load as iload
-from irap import Visual as ivis
-from irap import SVM as isvm
-from irap import Plot as iplot
+import Load as iload
+import Visual as ivis
+import SVM as isvm
+import Plot as iplot
 from math import sqrt
 
 
@@ -99,12 +99,12 @@ def evaluate_folder(path, cg=None, cv=5, out=None):
                 cg_box[i][1] = 0.01
             test_label, predict_label = isvm.svm_evaluate(i, cg_box[i][0], cg_box[i][1], cv)
             eval_value.append(evaluate_score(test_label, predict_label))
-            eval_key.append(os.path.split(i)[-1].split('&')[1])
+            eval_key.append(os.path.split(i)[-1].split('-')[1])
     else:
         for i in path:
             test_label, predict_label = isvm.svm_evaluate(i, 8, 0.125, cv)
             eval_value.append(evaluate_score(test_label, predict_label))
-            eval_key.append(os.path.split(i)[-1].split('&')[1])
+            eval_key.append(os.path.split(i)[-1].split('-')[1])
     if out != None:
         if os.path.split(out)[-1] not in os.listdir(os.path.split(out)[0]):
             os.makedirs(out)
