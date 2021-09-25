@@ -9,7 +9,7 @@ setup(name='irap',
     author_email='1694822092@qq.com',
     license='BSD 2-Clause',
     packages=['irap'],
-    install_requires=['pyecharts', 'numpy', 'scikit-learn', 'pandas'],
+    install_requires=['pyecharts', 'numpy', 'scikit-learn', 'pandas', 'seaborn'],
     entry_points={
         'console_scripts': [
         'irap=irap.__main__:irap',
