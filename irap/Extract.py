@@ -1,9 +1,11 @@
 # import package
 import os
+file_path = os.path.dirname(__file__)
+import sys
+sys.path.append(file_path)
 import Load as iload
 import Visual as ivis
 import Feature as ifeat
-file_path = os.path.dirname(__file__)
 raac_path = os.path.join(file_path, 'raacDB')
 now_path = os.getcwd()
 extract_method = ['RAAC-PSSM', 'RAAC-KPSSM', 'RAAC-DTPSSM', 'RAAC-SW', 'RAAC-KMER', 'SAAC', 'OAAC']

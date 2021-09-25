@@ -3,6 +3,9 @@ import os
 import numpy as np
 import pandas as pd
 now_path = os.getcwd()
+file_path = os.path.dirname(__file__)
+import sys
+sys.path.append(file_path)
 import Load as iload
 import Visual as ivis
 import SVM as isvm

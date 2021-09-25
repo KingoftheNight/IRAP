@@ -1,3 +1,7 @@
+import os
+file_path = os.path.dirname(__file__)
+import sys
+sys.path.append(file_path)
 import Extract as iextra
 import Visual as ivis
 import copy

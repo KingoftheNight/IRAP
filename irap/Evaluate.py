@@ -1,5 +1,8 @@
 # import packages
 import os
+file_path = os.path.dirname(__file__)
+import sys
+sys.path.append(file_path)
 import Load as iload
 import Visual as ivis
 import SVM as isvm

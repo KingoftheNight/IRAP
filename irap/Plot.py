@@ -1,5 +1,8 @@
 # import packages
 import os
+file_path = os.path.dirname(__file__)
+import sys
+sys.path.append(file_path)
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -14,8 +17,7 @@ import Load as iload
 import Feature as ifeat
 import Visual as ivis
 now_path = os.getcwd()
-plot_path = os.path.dirname(__file__)
-raac_path = os.path.join(plot_path, 'raacDB')
+raac_path = os.path.join(file_path, 'raacDB')
 
 
 # feature filter ##############################################################

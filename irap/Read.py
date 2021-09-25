@@ -3,6 +3,8 @@ import os
 now_path = os.getcwd()
 file_path = os.path.dirname(__file__)
 raac_path = os.path.join(file_path, 'raacDB')
+import sys
+sys.path.append(file_path)
 import Load as iload
 import Blast as iblast
 import Extract as iextra

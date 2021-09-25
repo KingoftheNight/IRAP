@@ -4,6 +4,8 @@ now_path = os.getcwd()
 import numpy as np
 import urllib.request
 file_path = os.path.dirname(__file__)
+import sys
+sys.path.append(file_path)
 import SVM as isvm
 import tarfile
 import gzip

@@ -1,5 +1,8 @@
 # import packages
 import os
+file_path = os.path.dirname(__file__)
+import sys
+sys.path.append(file_path)
 from sklearn import svm
 from joblib import dump, load
 import Load as iload
