@@ -25,6 +25,10 @@ except:
     import Visual as ivis
     import SVM as isvm
     import Version
+ivis.visual_create_blast(file_path)
+ivis.visual_create_aaindex(file_path)
+ivis.visual_create_raac(file_path)
+ivis.visual_create_bin(file_path)
 
 
 # fuctions ####################################################################
@@ -335,8 +339,4 @@ def irap():
 
 # main
 if __name__ == '__main__':
-    ivis.visual_create_blast(file_path)
-    ivis.visual_create_aaindex(file_path)
-    ivis.visual_create_raac(file_path)
-    ivis.visual_create_bin(file_path)
     irap()
