@@ -1,7 +1,6 @@
 import sys
 import os
 import argparse
-import subprocess
 now_path = os.getcwd()
 file_path = os.path.dirname(__file__)
 sys.path.append(file_path)
