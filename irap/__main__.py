@@ -15,6 +15,7 @@ try:
     from . import Visual as ivis
     from . import SVM as isvm
     from . import Version
+    from . import Windows
 except:
     import Load as iload
     import Read as iread
@@ -25,6 +26,7 @@ except:
     import Visual as ivis
     import SVM as isvm
     import Version
+    import Windows
 ivis.visual_create_blast(file_path)
 ivis.visual_create_aaindex(file_path)
 ivis.visual_create_raac(file_path)
@@ -176,9 +178,11 @@ def parse_weologo(args):
 
 # windows
 def parse_windows(args):
-    command = 'python ' + os.path.join(file_path, 'Windows.py')
-    outcode = subprocess.Popen(command, shell=True)
-    outcode.wait()
+    Windows.window()
+    #command = 'python ' + '"' + os.path.join(file_path, 'Windows.py') + '"'
+    #print(command)
+    #outcode = subprocess.Popen(command, shell=True)
+    #outcode.wait()
 
 
 # argparse ####################################################################
