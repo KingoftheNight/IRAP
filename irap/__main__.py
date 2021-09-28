@@ -178,17 +178,13 @@ def parse_weologo(args):
 # windows
 def parse_windows(args):
     Windows.window()
-    #command = 'python ' + '"' + os.path.join(file_path, 'Windows.py') + '"'
-    #print(command)
-    #outcode = subprocess.Popen(command, shell=True)
-    #outcode.wait()
 
 
 # argparse ####################################################################
 
 
 def irap():
-    parser = argparse.ArgumentParser(description='An Protein Classification Tool Base On RAAC-PSSM Matrix',
+    parser = argparse.ArgumentParser(description='An Intelligent RAAC-PSSM Protein Prediction Package',
                                      fromfile_prefix_chars='@', conflict_handler='resolve')
     subparsers = parser.add_subparsers(help='RPCT help')
     # make database
