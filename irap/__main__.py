@@ -34,7 +34,7 @@ ivis.visual_create_bin(file_path)
 
 # fuctions ####################################################################
 def parse_version(args):
-    print('\nEasyRAAC version=' + Version.version)
+    print('\nIRAP version=' + Version.version)
 
 
 # make database
