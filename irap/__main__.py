@@ -165,8 +165,7 @@ def parse_rsup(args):
 
 # view raac map
 def parse_view(args):
-    print('暂不可用')
-    # Plot.plot_ssc_main(args.file[0], args.type_raac[0], now_path)
+    iplot.plot_ssc(args.file[0], args.type_raac[0])
 
 
 # weblogo

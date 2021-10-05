@@ -234,7 +234,7 @@ def load_hys(file):
 
 
 # read raac of different types
-def read_ssc(raa_file, type_r):
+def load_ssc(raa_file, type_r):
     with open(raa_file, "r") as f:
         data = f.readlines()
     out_box = []
