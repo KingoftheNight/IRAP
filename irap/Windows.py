@@ -450,7 +450,6 @@ def window():
             web_o = e_web_o.get()
             if len(web_f) != 0 and len(web_b) != 0 and len(web_r) != 0 and len(web_o) != 0:
                 print('\n>>>Drawing...\n')
-                print('暂不可用')
                 iplot.plot_weblogo(web_f, web_b, web_r, web_o)
                 v_command = 'weblogo\t' + web_f + ' -raa ' + web_b + ' -r ' + web_r + ' -o ' + web_o
                 v_command = same_len(v_command)
@@ -510,8 +509,7 @@ def window():
             view_t = e_view_t.get()
             if len(view_n) != 0 and len(view_t) != 0:
                 print('\n>>>View RAAC Map...\n')
-                print('暂不可用')
-                # Plot.plot_ssc_main(view_n, view_t, now_path)
+                iplot.plot_ssc(view_n, view_t, now_path)
                 v_command = 'view\t' + view_n + ' -t ' + view_t
                 v_command = same_len(v_command)
                 var.set(v_command)
