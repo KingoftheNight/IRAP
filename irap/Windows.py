@@ -18,6 +18,7 @@ def window():
         from . import Select as iselect
         from . import SVM as isvm
         from . import Version
+        from . import Res
     except:
         import Load as iload
         import Read as iread
@@ -27,6 +28,7 @@ def window():
         import Select as iselect
         import SVM as isvm
         import Version
+        import Res
     
     # create messagebox ###########################################################
     
@@ -408,7 +410,7 @@ def window():
             res_p = e_res_p.get()
             if len(res_p) != 0:
                 print('\n>>>Reducing Amino Acid...\n')
-                # Res.res_main(res_p)
+                Res.res(res_p)
                 v_command = 'res\t' + res_p
                 v_command = same_len(v_command)
                 var.set(v_command)

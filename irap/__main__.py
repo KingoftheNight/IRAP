@@ -15,6 +15,7 @@ try:
     from . import SVM as isvm
     from . import Version
     from . import Windows
+    from . import Res
 except:
     import Load as iload
     import Read as iread
@@ -26,6 +27,7 @@ except:
     import SVM as isvm
     import Version
     import Windows
+    import Res
 ivis.visual_create_blast(file_path)
 ivis.visual_create_aaindex(file_path)
 ivis.visual_create_raac(file_path)
@@ -124,8 +126,7 @@ def parse_fffs(args):
 
 # reduce aa by personal rules
 def parse_res(args):
-    print('暂不可用')
-    #Res.res_main(args.rule_id[0])
+    Res.res(args.rule_id[0])
 
 
 # integrated learning
