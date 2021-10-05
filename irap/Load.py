@@ -183,7 +183,7 @@ def load_svm_feature(file, filter_index, number, out=None):
         content = ''
         for i in range(len(out_matrix)):
             line = out_matrix[i]
-            mid = str(int(out_type[i]))
+            mid = str(out_type[i])
             for j in range(number):
                 mid += ' ' + str(j+1) + ':' + str(line[j])
             content += mid + '\n'
@@ -253,7 +253,7 @@ def read_ssc(raa_file, type_r):
 
 
 # read pssm weblogo
-def read_weblogo_main(matrix):
+def load_weblogo(matrix):
     def line_score(newrow):
         out_box = []
         a = 0

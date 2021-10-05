@@ -171,8 +171,7 @@ def parse_view(args):
 
 # weblogo
 def parse_weologo(args):
-    print('暂不可用')
-    # Plot.plot_weblogo_main(args.file[0], args.raa_name[0], args.reduce_type[0], args.out[0], now_path)
+    iplot.plot_weblogo(args.file[0], args.raa_name[0], args.reduce_type[0], args.out[0])
 
 
 # windows

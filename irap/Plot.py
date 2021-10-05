@@ -9,7 +9,9 @@ import seaborn as sns
 import math
 import matplotlib.pyplot as plt
 from pyecharts import options as opts
-from pyecharts.charts import Pie
+from pyecharts.charts import Pie, Bar
+from pyecharts.commons.utils import JsCode
+from pyecharts.globals import ThemeType
 from sklearn import svm
 from sklearn import model_selection
 from sklearn.metrics import roc_curve, auc
@@ -375,3 +377,98 @@ def plot_roc(file, out=now_path, c=8, g=0.125):
         plot_roc_line(fpr, tpr, roc_auc, out)
     else:
         plot_roc_line(fpr, tpr, roc_auc, os.path.join(out, 'ROC-cruve.png'))
+
+
+# weblogo #####################################################################
+def plot_weblogo_check(line):
+    add = 0
+    for i in line:
+        add += i
+    if add > 100:
+        mid = add - 100
+        line[line.index(max(line))] = line[line.index(max(line))] - mid
+    elif add < 100:
+        mid = 100 - add
+        line[line.index(max(line))] = line[line.index(max(line))] + mid
+    return line
+
+
+# weblogo change
+def plot_weblogo_change(matrix, raacode):
+    # 合并列
+    new_matrix = []
+    aa = 'ARNDCQEGHILKMFPSTWYV'
+    for line in matrix:
+        new_line = ivis.visual_create_n_matrix(x=len(raacode), fill=0)
+        for i in range(len(line)):
+            for j in range(len(raacode)):
+                if aa[i] in raacode[j]:
+                    new_line[j] += line[i]
+        new_line = plot_weblogo_check(new_line)
+        new_matrix.append(new_line)
+    # 提取列
+    out_box = []
+    for i in range(len(new_matrix[0])):
+        mid_box = []
+        for j in new_matrix:
+            mid_box.append(j[i])
+        out_box.append(mid_box)
+    # 格式转换
+    out_dic = []
+    for each in out_box:
+        mid_box = []
+        for i in each:
+            mid_dic = {"value": i, "percent": i / 100}
+            mid_box.append(mid_dic)
+        out_dic.append(mid_box)
+    return out_dic
+
+
+def plot_weblogo_draw(site_list, type_list, type_value, out):
+    c = Bar(init_opts=opts.InitOpts(theme=ThemeType.LIGHT))
+    c.add_xaxis(site_list)
+    for i in range(len(type_list)):
+        c.add_yaxis(type_list[i], type_value[i], stack="stack1", category_gap="50%")
+    c.set_series_opts(
+        label_opts=opts.LabelOpts(
+            is_show=False,
+            position="right",
+            formatter=JsCode(
+                "function(x){return Number(x.data.percent * 100).toFixed() + '%';}"
+                ),
+            )
+        )
+    if len(type_list) >= 8:
+        c.set_global_opts(
+            title_opts=opts.TitleOpts(title="Sequence Reduce Weblogo", pos_left="center"),
+            datazoom_opts=[opts.DataZoomOpts(), opts.DataZoomOpts(type_="inside")],
+            yaxis_opts=opts.AxisOpts(name="persernt(%)"),
+            xaxis_opts=opts.AxisOpts(name="site"),
+            toolbox_opts=opts.ToolboxOpts(is_show=True, pos_left="0px", pos_bottom="0px", feature={"saveAsImage": {}}),
+            legend_opts=opts.LegendOpts(pos_right='0px', pos_top='10px', orient='vertical')
+            )
+    else:
+        c.set_global_opts(
+            title_opts=opts.TitleOpts(title="Sequence Reduce Weblogo", pos_left="center"),
+            datazoom_opts=[opts.DataZoomOpts(), opts.DataZoomOpts(type_="inside")],
+            yaxis_opts=opts.AxisOpts(name="persernt(%)"),
+            xaxis_opts=opts.AxisOpts(name="site"),
+            toolbox_opts=opts.ToolboxOpts(is_show=True, pos_left="0px", pos_bottom="0px", feature={"saveAsImage": {}}),
+            legend_opts=opts.LegendOpts(pos_top='5%')
+            )
+    c.render(out)
+    return c
+
+
+# weblogo main
+def plot_weblogo(file, raa, reduce, out):
+    raa_file = os.path.join(raac_path, raa)
+    raa_dict, raa_index = iload.load_raac(raa_file)
+    raacode = raa_dict[reduce]
+    matrix, sq = iload.load_pssm(file)
+    matrix = iload.load_weblogo(matrix)
+    type_value = plot_weblogo_change(matrix, raacode)
+    site_list = []
+    for i in range(len(type_value[0])):
+        site_list.append(i+1)
+    plot_weblogo_draw(site_list, raacode, type_value, out)

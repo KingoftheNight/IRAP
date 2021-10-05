@@ -451,7 +451,7 @@ def window():
             if len(web_f) != 0 and len(web_b) != 0 and len(web_r) != 0 and len(web_o) != 0:
                 print('\n>>>Drawing...\n')
                 print('暂不可用')
-                # Plot.plot_weblogo_main(web_f, web_b, web_r, web_o, now_path)
+                iplot.plot_weblogo(web_f, web_b, web_r, web_o)
                 v_command = 'weblogo\t' + web_f + ' -raa ' + web_b + ' -r ' + web_r + ' -o ' + web_o
                 v_command = same_len(v_command)
                 var.set(v_command)
