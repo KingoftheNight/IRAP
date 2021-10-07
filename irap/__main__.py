@@ -155,15 +155,6 @@ def parse_rblast(args):
         print('Problems')
 
 
-# ray supplement
-def parse_rsup(args):
-    print('暂不可用')
-    #if(platform.system()=='Linux'):
-    #    Blast.blast_raysup_linux(args.folder[0], args.out[0], now_path)
-    #if(platform.system()=='Windows'):
-    #	Blast.blast_raysup_windows(args.folder[0], args.out[0], now_path)
-
-
 # view raac map
 def parse_view(args):
     iplot.plot_ssc(args.file[0], args.type_raac[0])
@@ -308,11 +299,6 @@ def irap():
     parser_rb.add_argument('-ev', '--expected_value', nargs=1, type=str, help='expected value of blast cycles')
     parser_rb.add_argument('-o', '--output', nargs=1, help='output folder')
     parser_rb.set_defaults(func=parse_rblast)
-    # ray_supplement
-    parser_rs = subparsers.add_parser('rsup', add_help=False, help='supplement blast')
-    parser_rs.add_argument('folder', nargs=1, help='input sequence folder')
-    parser_rs.add_argument('-o', '--out', nargs=1, help='out folder')
-    parser_rs.set_defaults(func=parse_rsup)
     # view
     parser_vw = subparsers.add_parser('view', add_help=False, help='view raac map')
     parser_vw.add_argument('file', nargs=1, help='input raac book name')
