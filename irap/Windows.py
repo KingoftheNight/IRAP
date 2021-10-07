@@ -502,6 +502,68 @@ def window():
                            height=1,command=gui_exit)
         b_mwo_back.pack(side='bottom',fill='x')
         mwo.mainloop()
+        
+        
+    def messagebox_reducesq():
+        #fuction
+        def gui_res():
+            var.set('View Reduce Sequence by target fasta file')
+            red_f = e_red_f.get()
+            red_b = e_red_b.get()
+            red_r = e_red_r.get()
+            red_o = e_red_o.get()
+            if len(red_f) != 0 and len(red_b) != 0 and len(red_r) != 0 and len(red_o) != 0:
+                print('\n>>>Drawing...\n')
+                iplot.plot_reduce(red_f, reduce=red_b, raatp=red_r, out=red_o)
+                v_command = 'reduce\t' + red_f + ' -raa ' + red_b + ' -r ' + red_r + ' -o ' + red_o
+                v_command = same_len(v_command)
+                var.set(v_command)
+                cmd.insert('end', '\n' + v_command)
+        def gui_exit():
+            mrq.destroy()
+            mrq.quit()
+        #new window
+        mrq =  tk.Toplevel(window) 
+        mrq.title('View Sequence Reduce WebLogo')
+        mrq.geometry('480x80')
+        mrq.iconbitmap(os.path.join(os.path.join(file_path, 'bin'), 'Logo.ico'))
+        #res
+        mrqf_1 = tk.Frame(mrq)
+        mrqf_2 = tk.Frame(mrq)
+        mrqf_1.pack(side='top',fill='x')
+        mrqf_2.pack(side='bottom',fill='x')
+        mrqf_2_1 = tk.Frame(mrqf_2)
+        mrqf_2_1.pack(side='top',fill='x')
+        mrqf_2_2 = tk.Frame(mrqf_2)
+        mrqf_2_2.pack(side='bottom',fill='x')
+        ######file
+        tk.Label(mrqf_1,text='Fasta file',width=10,anchor='w').pack(side='left')
+        e_red_f = tk.Entry(mrqf_1,show=None,width=20,font=('SimHei', 11))
+        e_red_f.pack(side='left')
+        tk.Label(mrqf_1,text='',width=2,anchor='w').pack(side='left')
+        ######book
+        tk.Label(mrqf_1,text='RAAC Book',width=10,anchor='w').pack(side='left')
+        e_red_b = tk.Entry(mrqf_1,show=None,width=10,font=('SimHei', 11))
+        e_red_b.pack(side='left')
+        tk.Label(mrqf_1,text='',width=2,anchor='w').pack(side='left')
+        ######reduce
+        tk.Label(mrqf_2_1,text='Reduce Type',width=12,anchor='w').pack(side='left')
+        e_red_r = tk.Entry(mrqf_2_1,show=None,width=6,font=('SimHei', 11))
+        e_red_r.pack(side='left')
+        tk.Label(mrqf_2_1,text='',width=2,anchor='w').pack(side='left')
+        ######out
+        tk.Label(mrqf_2_1,text='out',width=4,anchor='w').pack(side='left')
+        e_red_o = tk.Entry(mrqf_2_1,show=None,width=20,font=('SimHei', 11))
+        e_red_o.pack(side='left')
+        tk.Label(mrqf_2_1,text='',width=2,anchor='w').pack(side='left')
+        ######button
+        b_rq_draw = tk.Button(mrqf_2_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_res)
+        b_rq_draw.pack(side='right')
+        #exit
+        b_mrq_back = tk.Button(mrqf_2_2,text='Exit',font=('SimHei',11),bg='#75E4D7',relief='flat',
+                           height=1,command=gui_exit)
+        b_mrq_back.pack(side='bottom',fill='x')
+        mrq.mainloop()
     
     def messagebox_view():
         #fuction
@@ -902,7 +964,7 @@ def window():
     tilogo = tk.PhotoImage(file=(os.path.join(os.path.join(file_path, 'bin'), 'Title.gif')))
     tilogo_label = tk.Label(frame_1_1,image=tilogo,bg='DarkTurquoise',anchor='center')
     tilogo_label.pack(side='left')
-    title = tk.Label(frame_1_1,text='RPCT: PSSM-RAAC-based Protein Analysis Tool',
+    tk.Label(frame_1_1,text='RPCT: PSSM-RAAC-based Protein Analysis Tool',
                      bg='DarkTurquoise',font=('SimHei', 16), width=50, height=3,anchor='center').pack()
     
     # create tab contral(frame_1_2) ###########################################################
@@ -1325,6 +1387,7 @@ def window():
     toolmenu.add_command(label='Self Reduce Amino Acids Code',command=messagebox_raa)
     toolmenu.add_command(label='View RAAC Map Of Different Types',command=messagebox_view)
     toolmenu.add_command(label='View Sequence Reduce Weblogo',command=messagebox_weblogo)
+    toolmenu.add_command(label='View Reduce Sequence',command=messagebox_reducesq)
     #help menu
     editmenu = tk.Menu(root_menu, tearoff=0)
     root_menu.add_cascade(label='Help',menu=editmenu)

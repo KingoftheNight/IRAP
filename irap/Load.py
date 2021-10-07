@@ -11,6 +11,13 @@ import tarfile
 import gzip
 
 
+# load fasta file
+def load_fasta_file(file):
+    with open(file, 'r') as f:
+        data = f.readlines()[-1]
+    return data.strip()
+
+
 # load svm file
 def load_svmfile(file):
     with open(file, 'r') as f1:

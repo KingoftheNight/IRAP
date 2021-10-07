@@ -1,6 +1,7 @@
 # import package
 import os
 import base64
+import time
 
 
 # long blast command output
@@ -85,3 +86,9 @@ def visual_detal_time(start_e, end_e, start_n, end_n):
 # detal eval result
 def visual_eval_analize():
     return "预测成功率(Accuracy, Acc):\n\nAcc = (TP + TN) / (TP + FP + TN + FN)\n\n敏感度(Sensitivity, SN)也称召回率(Recall, RE):\n\nSn = Recall = TP / (TP + FN)\n\n特异性(Specificity, SP):\n\nSp = TN / (TN + FP)\n\n精确率(Precision, PR)也称阳极预测值(Positive Predictive Value, PPV):\n\nPrecision= PPV = TP / (TP + FP)\n\nMatthew 相关系数(Matthew's correlation coefficient, Mcc):\n\nMCC = (TP*TN- FP*FN)/sqrt((TP + FP)*(TN + FN)*(TP + FN)*(TN + FP)).其中sqrt代表开平方."
+
+
+# time stamp
+def visual_timestamp():
+    a = time.mktime(time.localtime())
+    return str(int(a))
