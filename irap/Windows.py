@@ -6,6 +6,7 @@ def window():
     from tkinter import ttk
     import os
     import sys
+    import subprocess
     now_path = os.getcwd()
     file_path = os.path.dirname(__file__)
     sys.path.append(file_path)
@@ -61,24 +62,18 @@ def window():
             mmw.destroy()
             mmw.quit()
         def gui_mmb():
-            mm_t = e_mm_t.get()
-            mm_p = e_mm_p.get()
-            if len(mm_t) != 0 and len(mm_p) != 0:
-                print('\n>>>Multprocess...\n')
-                print('暂不可用')
-                # Function_win.ray_blast(mm_t, mm_p, now_path)
-                v_command = 'rblast\t-in ' + mm_t + ' -o ' + mm_p
-                v_command = same_len(v_command)
-                var.set(v_command)
-                cmd.insert('end', '\n' + v_command)
-        def gui_mms():
+            mm_f = e_mm_f.get()
+            mm_d = e_mm_d.get()
+            mm_n = e_mm_n.get()
             mm_e = e_mm_e.get()
-            mm_g = e_mm_g.get()
-            if len(mm_e) != 0 and len(mm_g) != 0:
-                print('\n>>>Multprocess...\n')
-                print('暂不可用')
-                # Function_win.ray_supplement(mm_e, mm_g, now_path)
-                v_command = 'rsup\t-in ' + mm_e + ' -o ' + mm_g
+            mm_o = e_mm_o.get()
+            if len(mm_f) != 0 and len(mm_d) != 0 and len(mm_n) != 0 and len(mm_e) != 0 and len(mm_o) != 0:
+                print('\n>>>Multprocess Blast...\n')
+                command = 'python ' + os.path.join(file_path, 'Ray.py') + ' ' + mm_f + ' ' + mm_d + ' ' + mm_n + ' ' + mm_e + ' ' + mm_o
+                outcode = subprocess.Popen(command, shell=True)
+                if outcode.wait() != 0:
+                    print('Problems')
+                v_command = 'rblast\t-in ' + mm_f + ' -db ' + mm_d + ' -n ' + mm_n + ' -ev ' + mm_e + ' -o ' + mm_o
                 v_command = same_len(v_command)
                 var.set(v_command)
                 cmd.insert('end', '\n' + v_command)
@@ -93,34 +88,36 @@ def window():
         mmf_1.pack(side='top',fill='x')
         mmf_2.pack(side='bottom',fill='x')
         mmf_2_1 = tk.Frame(mmf_2)
-        mmf_2_1.pack(side='top',fill='x')
         mmf_2_2 = tk.Frame(mmf_2)
+        mmf_2_1.pack(side='top',fill='x')
         mmf_2_2.pack(side='bottom',fill='x')
         ######folder
         tk.Label(mmf_1,text='rblast:  fasta folder',width=16,anchor='w').pack(side='left')
-        e_mm_t = tk.Entry(mmf_1,show=None,width=15,font=('SimHei', 11))
-        e_mm_t.pack(side='left')
+        e_mm_f = tk.Entry(mmf_1,show=None,width=15,font=('SimHei', 11))
+        e_mm_f.pack(side='left')
         tk.Label(mmf_1,text='',width=2,anchor='w').pack(side='left')
-        ######out
-        tk.Label(mmf_1,text='out folder',width=11,anchor='w').pack(side='left')
-        e_mm_p = tk.Entry(mmf_1,show=None,width=15,font=('SimHei', 11))
-        e_mm_p.pack(side='left')
+        ######database
+        tk.Label(mmf_1,text='database',width=9,anchor='w').pack(side='left')
+        e_mm_d = tk.Entry(mmf_1,show=None,width=15,font=('SimHei', 11))
+        e_mm_d.pack(side='left')
         tk.Label(mmf_1,text='',width=2,anchor='w').pack(side='left')
-        ######button
-        b_mm = tk.Button(mmf_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_mmb)
-        b_mm.pack(side='right')
-        ######folder
-        tk.Label(mmf_2_1,text='rcheck: fasta folder',width=16,anchor='w').pack(side='left')
-        e_mm_e = tk.Entry(mmf_2_1,show=None,width=15,font=('SimHei', 11))
+        ######number
+        tk.Label(mmf_2_1,text='number',width=7,anchor='w').pack(side='left')
+        e_mm_n = tk.Entry(mmf_2_1,show=None,width=7,font=('SimHei', 11))
+        e_mm_n.pack(side='left')
+        tk.Label(mmf_2_1,text='',width=2,anchor='w').pack(side='left')
+        ######ev
+        tk.Label(mmf_2_1,text='ev',width=3,anchor='w').pack(side='left')
+        e_mm_e = tk.Entry(mmf_2_1,show=None,width=7,font=('SimHei', 11))
         e_mm_e.pack(side='left')
         tk.Label(mmf_2_1,text='',width=2,anchor='w').pack(side='left')
         ######out
-        tk.Label(mmf_2_1,text='out folder',width=11,anchor='w').pack(side='left')
-        e_mm_g = tk.Entry(mmf_2_1,show=None,width=15,font=('SimHei', 11))
-        e_mm_g.pack(side='left')
+        tk.Label(mmf_2_1,text='out folder',width=14,anchor='w').pack(side='left')
+        e_mm_o = tk.Entry(mmf_2_1,show=None,width=15,font=('SimHei', 11))
+        e_mm_o.pack(side='left')
         tk.Label(mmf_2_1,text='',width=2,anchor='w').pack(side='left')
         ######button
-        b_mm = tk.Button(mmf_2_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_mms)
+        b_mm = tk.Button(mmf_2_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_mmb)
         b_mm.pack(side='right')
         #exit
         b_mmw_back = tk.Button(mmf_2_2,text='Exit',font=('SimHei',11),bg='#75E4D7',relief='flat',

@@ -1,6 +1,7 @@
 import sys
 import os
 import argparse
+import subprocess
 now_path = os.getcwd()
 file_path = os.path.dirname(__file__)
 sys.path.append(file_path)
@@ -148,11 +149,10 @@ def parse_mhy(args):
 
 # ray blast
 def parse_rblast(args):
-    print('暂不可用')
-    #if(platform.system()=='Linux'):
-    #    Blast.blast_rayblast_linux(args.folder[0], args.out[0], now_path)
-    #if(platform.system()=='Windows'):
-    #	Blast.blast_rayblast_windows(args.folder[0], args.out[0], now_path)
+    command = 'python ' + os.path.join(file_path, 'Ray.py') + ' ' + args.folder[0] + ' ' + args.database[0] + ' ' + args.num_iterations[0] + ' ' + args.expected_value[0] + ' ' + args.output[0]
+    outcode = subprocess.Popen(command, shell=True)
+    if outcode.wait() != 0:
+        print('Problems')
 
 
 # ray supplement
@@ -302,8 +302,11 @@ def irap():
     parser_mh.set_defaults(func=parse_mhy)
     # ray_blast
     parser_rb = subparsers.add_parser('rblast', add_help=False, help='multithreaded blast')
-    parser_rb.add_argument('folder', nargs=1, help='input sequence folder')
-    parser_rb.add_argument('-o', '--out', nargs=1, help='out folder')
+    parser_rb.add_argument('folder', nargs=1, help='input a folder containing single sequence files')
+    parser_rb.add_argument('-db', '--database', nargs=1, type=str, help='database for blast')
+    parser_rb.add_argument('-n', '--num_iterations', nargs=1, type=str, help='number of blast cycles')
+    parser_rb.add_argument('-ev', '--expected_value', nargs=1, type=str, help='expected value of blast cycles')
+    parser_rb.add_argument('-o', '--output', nargs=1, help='output folder')
     parser_rb.set_defaults(func=parse_rblast)
     # ray_supplement
     parser_rs = subparsers.add_parser('rsup', add_help=False, help='supplement blast')

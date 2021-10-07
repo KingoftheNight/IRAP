@@ -107,11 +107,11 @@ def load_fasta_folder(file=None, out='positive'):
 
 
 # reload pssm folder
-def load_reload_pssm(path):
-    pssm = []
+def load_reload_folder(path):
+    out = []
     for i in os.listdir(path):
-        pssm.append(os.path.join(path, i))
-    return pssm
+        out.append(os.path.join(path, i))
+    return out
 
 
 # load raac dictionary
@@ -344,14 +344,6 @@ def load_model_save_folder(path, cg=None, out=now_path):
                 isvm.svm_train(i, 8, 0.125, os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
                 model_path.append(os.path.join(out, os.path.split(i)[-1].split('.')[0] + '.model'))
     return model_path
-
-
-# reload feature folder
-def load_reload_feature(path):
-    pssm_path = []
-    for i in os.listdir(path):
-        pssm_path.append(os.path.join(path, i))
-    return pssm_path
 
 
 # load precaution
