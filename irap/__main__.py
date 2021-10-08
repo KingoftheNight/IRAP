@@ -1,7 +1,6 @@
 import sys
 import os
 import argparse
-import subprocess
 now_path = os.getcwd()
 file_path = os.path.dirname(__file__)
 sys.path.append(file_path)
@@ -149,10 +148,7 @@ def parse_mhy(args):
 
 # ray blast
 def parse_rblast(args):
-    command = 'python ' + os.path.join(file_path, 'Ray.py') + ' ' + args.folder[0] + ' ' + args.database[0] + ' ' + args.num_iterations[0] + ' ' + args.expected_value[0] + ' ' + args.output[0]
-    outcode = subprocess.Popen(command, shell=True)
-    if outcode.wait() != 0:
-        print('Problems')
+    iread.read_ray_blast(args.folder[0], args.output[0], db=args.database[0], n=args.num_iterations[0], ev=args.expected_value[0])
 
 
 # view raac map

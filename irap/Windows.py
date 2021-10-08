@@ -6,7 +6,6 @@ def window():
     from tkinter import ttk
     import os
     import sys
-    import subprocess
     now_path = os.getcwd()
     file_path = os.path.dirname(__file__)
     sys.path.append(file_path)
@@ -69,10 +68,7 @@ def window():
             mm_o = e_mm_o.get()
             if len(mm_f) != 0 and len(mm_d) != 0 and len(mm_n) != 0 and len(mm_e) != 0 and len(mm_o) != 0:
                 print('\n>>>Multprocess Blast...\n')
-                command = 'python ' + os.path.join(file_path, 'Ray.py') + ' ' + mm_f + ' ' + mm_d + ' ' + mm_n + ' ' + mm_e + ' ' + mm_o
-                outcode = subprocess.Popen(command, shell=True)
-                if outcode.wait() != 0:
-                    print('Problems')
+                iread.read_ray_blast(mm_f, mm_o, db=mm_d, n=mm_n, ev=mm_e)
                 v_command = 'rblast\t-in ' + mm_f + ' -db ' + mm_d + ' -n ' + mm_n + ' -ev ' + mm_e + ' -o ' + mm_o
                 v_command = same_len(v_command)
                 var.set(v_command)

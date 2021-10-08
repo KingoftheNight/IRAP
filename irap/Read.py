@@ -5,6 +5,7 @@ file_path = os.path.dirname(__file__)
 raac_path = os.path.join(file_path, 'raacDB')
 import sys
 sys.path.append(file_path)
+import subprocess
 import Load as iload
 import Blast as iblast
 import Extract as iextra
@@ -50,3 +51,12 @@ def read_model_save_folder(folder, cg, out):
     pssm_path = iload.load_reload_folder(os.path.join(now_path, folder))
     iload.load_model_save_folder(pssm_path, cg=cg, out=os.path.join(now_path, out))
 
+def read_ray_blast(path, out, db='pdbaa', n='3', ev='0.001'):
+    if 'PSSMs' not in os.listdir(now_path):
+        os.makedirs('PSSMs')
+    if out not in os.listdir(os.path.join(now_path, 'PSSMs')):
+        os.makedirs(os.path.join(os.path.join(now_path, 'PSSMs'), out))
+    command = 'python ' + os.path.join(file_path, 'Ray.py') + ' ' + os.path.join(os.path.join(now_path, 'Reads'), path) + ' ' + db + ' ' + n + ' ' + ev + ' ' + os.path.join(os.path.join(now_path, 'PSSMs'), out)
+    outcode = subprocess.Popen(command, shell=True)
+    if outcode.wait() != 0:
+        print('Problems')
