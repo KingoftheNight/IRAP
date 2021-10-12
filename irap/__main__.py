@@ -16,6 +16,7 @@ try:
     from . import Version
     from . import Windows
     from . import Res
+    from . import Weblogo as iweb
 except:
     import Load as iload
     import Read as iread
@@ -28,6 +29,7 @@ except:
     import Version
     import Windows
     import Res
+    import Weblogo as iweb
 ivis.visual_create_blast(file_path)
 ivis.visual_create_aaindex(file_path)
 ivis.visual_create_raac(file_path)
@@ -156,14 +158,20 @@ def parse_view(args):
     iplot.plot_ssc(args.file[0], args.type_raac[0])
 
 
-# weblogo
-def parse_weologo(args):
+# pssmlogo
+def parse_pssmlogo(args):
     iplot.plot_weblogo(args.file[0], args.raa_name[0], args.reduce_type[0], args.out[0])
 
 
 # reduce sequence
 def parse_reducesq(args):
     iplot.plot_reduce(args.file[0], reduce=args.raa_name[0], raatp=args.reduce_type[0], out=args.out[0])
+
+
+# weblogo
+def parse_weblogo(args):
+    iweb.weblogo(file=args.file[0], out=args.out[0])
+
 
 # windows
 def parse_windows(args):
@@ -300,20 +308,25 @@ def irap():
     parser_vw.add_argument('file', nargs=1, help='input raac book name')
     parser_vw.add_argument('-t', '--type_raac', nargs=1, help='type of raac')
     parser_vw.set_defaults(func=parse_view)
-    # weologo
-    parser_wo = subparsers.add_parser('weblogo', add_help=False, help='PSSM reduce weblogo')
-    parser_wo.add_argument('file', nargs=1, help='input PSSM file')
-    parser_wo.add_argument('-raa', '--raa_name', nargs=1, help='reduce amino acid file')
-    parser_wo.add_argument('-r', '--reduce_type', nargs=1, help='reduce type and size')
-    parser_wo.add_argument('-o', '--out', nargs=1, help='output file name')
-    parser_wo.set_defaults(func=parse_weologo)
-    # weologo
-    parser_rq = subparsers.add_parser('weblogo', add_help=False, help='PSSM reduce weblogo')
+    # pssmlogo
+    parser_po = subparsers.add_parser('pmlogo', add_help=False, help='PSSM reduce weblogo')
+    parser_po.add_argument('file', nargs=1, help='input PSSM file')
+    parser_po.add_argument('-raa', '--raa_name', nargs=1, help='reduce amino acid file')
+    parser_po.add_argument('-r', '--reduce_type', nargs=1, help='reduce type and size')
+    parser_po.add_argument('-o', '--out', nargs=1, help='output file name')
+    parser_po.set_defaults(func=parse_pssmlogo)
+    # reduce
+    parser_rq = subparsers.add_parser('reduce', add_help=False, help='sequence reduce')
     parser_rq.add_argument('file', nargs=1, help='input PSSM file')
     parser_rq.add_argument('-raa', '--raa_name', nargs=1, help='reduce amino acid file')
     parser_rq.add_argument('-r', '--reduce_type', nargs=1, help='reduce type and size')
     parser_rq.add_argument('-o', '--out', nargs=1, help='output file name')
     parser_rq.set_defaults(func=parse_reducesq)
+    # weblogo
+    parser_wo = subparsers.add_parser('weblogo', add_help=False, help='weblogo')
+    parser_wo.add_argument('file', nargs=1, help='input PSSM file')
+    parser_wo.add_argument('-o', '--out', nargs=1, help='output file name')
+    parser_wo.set_defaults(func=parse_weblogo)
     # windows
     parser_ws = subparsers.add_parser('windows', add_help=False, help='open windows GUI')
     parser_ws.set_defaults(func=parse_windows)

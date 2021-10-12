@@ -17,6 +17,7 @@ def window():
         from . import Plot as iplot
         from . import Select as iselect
         from . import SVM as isvm
+        from . import Weblogo as iweb
         from . import Version
         from . import Res
     except:
@@ -27,6 +28,7 @@ def window():
         import Plot as iplot
         import Select as iselect
         import SVM as isvm
+        from . import Weblogo as iweb
         import Version
         import Res
     
@@ -438,15 +440,60 @@ def window():
     def messagebox_weblogo():
         #fuction
         def gui_res():
-            var.set('View Sequence Reduce WebLogo by target PSSM file')
-            web_f = e_web_f.get()
-            web_b = e_web_b.get()
-            web_r = e_web_r.get()
-            web_o = e_web_o.get()
-            if len(web_f) != 0 and len(web_b) != 0 and len(web_r) != 0 and len(web_o) != 0:
+            var.set('View WebLogo')
+            wbo_f = e_wbo_f.get()
+            wbo_o = e_wbo_o.get()
+            if len(wbo_f) != 0 and len(wbo_o) != 0:
+                print('\n>>>Drawing WebLogo...\n')
+                iweb.weblogo(file=wbo_f, out=wbo_o)
+                v_command = 'weblogo\t' + wbo_f + ' -o ' + wbo_o
+                v_command = same_len(v_command)
+                var.set(v_command)
+                cmd.insert('end', '\n' + v_command)
+        def gui_exit():
+            wbw.destroy()
+            wbw.quit()
+        #new window
+        wbw =  tk.Toplevel(window) 
+        wbw.title('WebLogo')
+        wbw.geometry('500x60')
+        wbw.iconbitmap(os.path.join(os.path.join(file_path, 'bin'), 'Logo.ico'))
+        #res
+        wblf_1 = tk.Frame(wbw)
+        wblf_2 = tk.Frame(wbw)
+        wblf_1.pack(side='top',fill='x')
+        wblf_2.pack(side='bottom',fill='x')
+        ######file
+        tk.Label(wblf_1,text='file',width=5,anchor='w').pack(side='left')
+        e_wbo_f = tk.Entry(wblf_1,show=None,width=20,font=('SimHei', 11))
+        e_wbo_f.pack(side='left')
+        tk.Label(wblf_1,text='',width=2,anchor='w').pack(side='left')
+        ######out
+        tk.Label(wblf_1,text='out',width=4,anchor='w').pack(side='left')
+        e_wbo_o = tk.Entry(wblf_1,show=None,width=20,font=('SimHei', 11))
+        e_wbo_o.pack(side='left')
+        tk.Label(wblf_1,text='',width=2,anchor='w').pack(side='left')
+        ######button
+        b_predict = tk.Button(wblf_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_res)
+        b_predict.pack(side='right')
+        #exit
+        b_wbo_back = tk.Button(wblf_2,text='Exit',font=('SimHei',11),bg='#75E4D7',relief='flat',
+                           height=1,command=gui_exit)
+        b_wbo_back.pack(side='bottom',fill='x')
+        wbw.mainloop()
+
+    def messagebox_pssmlogo():
+        #fuction
+        def gui_res():
+            var.set('View Reduce PSSMLogo by target PSSM file')
+            pmo_f = e_pmo_f.get()
+            pmo_b = e_pmo_b.get()
+            pmo_r = e_pmo_r.get()
+            pmo_o = e_pmo_o.get()
+            if len(pmo_f) != 0 and len(pmo_b) != 0 and len(pmo_r) != 0 and len(pmo_o) != 0:
                 print('\n>>>Drawing...\n')
-                iplot.plot_weblogo(web_f, web_b, web_r, web_o)
-                v_command = 'weblogo\t' + web_f + ' -raa ' + web_b + ' -r ' + web_r + ' -o ' + web_o
+                iplot.plot_weblogo(pmo_f, pmo_b, pmo_r, pmo_o)
+                v_command = 'pssmlogo\t' + pmo_f + ' -raa ' + pmo_b + ' -r ' + pmo_r + ' -o ' + pmo_o
                 v_command = same_len(v_command)
                 var.set(v_command)
                 cmd.insert('end', '\n' + v_command)
@@ -455,7 +502,7 @@ def window():
             mwo.quit()
         #new window
         mwo =  tk.Toplevel(window) 
-        mwo.title('View Sequence Reduce WebLogo')
+        mwo.title('View Reduce PSSMLogo')
         mwo.geometry('480x80')
         mwo.iconbitmap(os.path.join(os.path.join(file_path, 'bin'), 'Logo.ico'))
         #res
@@ -469,27 +516,27 @@ def window():
         mwof_2_2.pack(side='bottom',fill='x')
         ######file
         tk.Label(mwof_1,text='PSSM file',width=10,anchor='w').pack(side='left')
-        e_web_f = tk.Entry(mwof_1,show=None,width=20,font=('SimHei', 11))
-        e_web_f.pack(side='left')
+        e_pmo_f = tk.Entry(mwof_1,show=None,width=20,font=('SimHei', 11))
+        e_pmo_f.pack(side='left')
         tk.Label(mwof_1,text='',width=2,anchor='w').pack(side='left')
         ######book
         tk.Label(mwof_1,text='RAAC Book',width=10,anchor='w').pack(side='left')
-        e_web_b = tk.Entry(mwof_1,show=None,width=10,font=('SimHei', 11))
-        e_web_b.pack(side='left')
+        e_pmo_b = tk.Entry(mwof_1,show=None,width=10,font=('SimHei', 11))
+        e_pmo_b.pack(side='left')
         tk.Label(mwof_1,text='',width=2,anchor='w').pack(side='left')
         ######reduce
         tk.Label(mwof_2_1,text='Reduce Type',width=12,anchor='w').pack(side='left')
-        e_web_r = tk.Entry(mwof_2_1,show=None,width=6,font=('SimHei', 11))
-        e_web_r.pack(side='left')
+        e_pmo_r = tk.Entry(mwof_2_1,show=None,width=6,font=('SimHei', 11))
+        e_pmo_r.pack(side='left')
         tk.Label(mwof_2_1,text='',width=2,anchor='w').pack(side='left')
         ######out
         tk.Label(mwof_2_1,text='out',width=4,anchor='w').pack(side='left')
-        e_web_o = tk.Entry(mwof_2_1,show=None,width=20,font=('SimHei', 11))
-        e_web_o.pack(side='left')
+        e_pmo_o = tk.Entry(mwof_2_1,show=None,width=20,font=('SimHei', 11))
+        e_pmo_o.pack(side='left')
         tk.Label(mwof_2_1,text='',width=2,anchor='w').pack(side='left')
         ######button
-        b_wo_draw = tk.Button(mwof_2_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_res)
-        b_wo_draw.pack(side='right')
+        b_po_draw = tk.Button(mwof_2_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_res)
+        b_po_draw.pack(side='right')
         #exit
         b_mwo_back = tk.Button(mwof_2_2,text='Exit',font=('SimHei',11),bg='#75E4D7',relief='flat',
                            height=1,command=gui_exit)
@@ -1379,8 +1426,9 @@ def window():
     toolmenu.add_command(label='Principal Component Analysis',command=messagebox_pca)
     toolmenu.add_command(label='Self Reduce Amino Acids Code',command=messagebox_raa)
     toolmenu.add_command(label='View RAAC Map Of Different Types',command=messagebox_view)
-    toolmenu.add_command(label='View Sequence Reduce Weblogo',command=messagebox_weblogo)
+    toolmenu.add_command(label='View Reduce PSSMlogo',command=messagebox_pssmlogo)
     toolmenu.add_command(label='View Reduce Sequence',command=messagebox_reducesq)
+    toolmenu.add_command(label='View Weblogo',command=messagebox_weblogo)
     #help menu
     editmenu = tk.Menu(root_menu, tearoff=0)
     root_menu.add_cascade(label='Help',menu=editmenu)

@@ -69,7 +69,9 @@ def visual_create_n_matrix(x=20, fill=0):
 
 
 # create aa index
-def visual_create_aa():
+def visual_create_aa(tp='p'):
+    if tp == 'n':
+        return ['A', 'T', 'C', 'G']
     return ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
 
 
