@@ -739,6 +739,9 @@ def window():
         b_meaw_back.pack(fill='x')
         meaw.mainloop()
     
+    def messagebox_lblast():
+        iload.load_blast()
+        iload.load_pdbaa()
     
     # Function Class ##############################################################
     
@@ -1414,6 +1417,7 @@ def window():
     root_menu.add_cascade(label='File', menu=filemenu)
     filemenu.add_command(label='Check Blast Database',command=messagebox_checkdb)
     filemenu.add_command(label='Edit RAAC database',command=messagebox_edit_raac)
+    filemenu.add_command(label='Load Blast Software',command=messagebox_lblast)
     filemenu.add_command(label='Make Blast Database',command=messagebox_makedb)
     filemenu.add_command(label='Save Operation Process',command=gui_memory)
     filemenu.add_command(label='Set Hyperparameters file',command=messagebox_sethys)

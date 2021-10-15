@@ -9,6 +9,7 @@ sys.path.append(file_path)
 import SVM as isvm
 import tarfile
 import gzip
+import platform
 
 
 # load fasta file
@@ -351,3 +352,33 @@ def load_precaution():
     with open(os.path.join(file_path, 'README'), 'r', encoding='UTF-8') as f:
         prec_data = f.read()
     return prec_data
+
+
+# load blast database
+def load_blast():
+    print('\nWaiting...')
+    if platform.system() == 'Windows':
+        file1 = 'psiblast.exe'
+        file2 = 'makeblastdb.exe'
+        file3 = 'nghttp2.dll'
+        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file3
+        save_path = os.path.join(os.path.join(file_path, 'bin'), file3)
+        urllib.request.urlretrieve(url, filename=save_path)
+        print('\nconfiguration file has been loaded!')
+    else:
+        file1 = 'psiblast'
+        file2 = 'makeblastdb'
+    if file1 not in os.listdir(os.path.join(file_path, 'bin')):
+        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file1
+        save_path = os.path.join(os.path.join(file_path, 'bin'), file1)
+        urllib.request.urlretrieve(url, filename=save_path)
+        print('\npsiblast function has been loaded!')
+    else:
+        print('\npsiblast function has been loaded successfully!')
+    if file2 not in os.listdir(os.path.join(file_path, 'bin')):
+        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file2
+        save_path = os.path.join(os.path.join(file_path, 'bin'), file2)
+        urllib.request.urlretrieve(url, filename=save_path)
+        print('\nmakeblastdb function has been loaded!')
+    else:
+        print('\nmakeblastdb function has been loaded successfully!')

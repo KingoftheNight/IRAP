@@ -178,6 +178,12 @@ def parse_windows(args):
     Windows.window()
 
 
+# load blast software
+def parse_software(args):
+    iload.load_blast()
+    iload.load_pdbaa()
+
+
 # argparse ####################################################################
 def irap():
     parser = argparse.ArgumentParser(description='An Intelligent RAAC-PSSM Protein Prediction Package',
@@ -333,6 +339,9 @@ def irap():
     # version
     parser_vs = subparsers.add_parser('version', add_help=False, help='check irap version')
     parser_vs.set_defaults(func=parse_version)
+    # lblast
+    parser_st = subparsers.add_parser('lblast', add_help=False, help='load blast software')
+    parser_st.set_defaults(func=parse_software)
     
     
     args = parser.parse_args()

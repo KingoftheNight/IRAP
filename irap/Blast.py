@@ -4,6 +4,7 @@ import subprocess
 now_path = os.getcwd()
 blast_path = os.path.dirname(__file__)
 database_path = os.path.join(blast_path, 'blastDB')
+function_path = os.path.join(blast_path, 'bin')
 import sys
 sys.path.append(blast_path)
 from Visual import visual_longcommand, visual_easy_time
@@ -43,7 +44,7 @@ def blast_psiblast_folder(folder, database, number, ev, name='positive', vi=Fals
 # database standardization
 def blast_makedb(file, name, out=database_path):
     save_path = os.path.join(out, name)
-    command = 'makeblastdb -in ' + file + ' -dbtype prot -parse_seqids -out ' + save_path
+    command = os.path.join(function_path, 'makeblastdb') + ' -in ' + file + ' -dbtype prot -parse_seqids -out ' + save_path
     outcode = subprocess.Popen(command, shell=True)
     outcode.wait()
 

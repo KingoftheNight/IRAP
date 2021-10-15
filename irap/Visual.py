@@ -2,11 +2,13 @@
 import os
 import base64
 import time
+file_path = os.path.dirname(__file__)
+function_path = os.path.join(file_path, 'bin')
 
 
 # long blast command output
 def visual_longcommand(file, database_path, number, ev, out):
-    command = 'psiblast -query ' + file + ' -db ' + database_path + ' -num_iterations ' + str(number) + ' -evalue ' + str(ev) + ' -out A' + ' -out_ascii_pssm ' + out
+    command = os.path.join(function_path, 'psiblast') + ' -query ' + file + ' -db ' + database_path + ' -num_iterations ' + str(number) + ' -evalue ' + str(ev) + ' -out A' + ' -out_ascii_pssm ' + out
     return command
 
 
@@ -94,3 +96,11 @@ def visual_eval_analize():
 def visual_timestamp():
     a = time.mktime(time.localtime())
     return str(int(a))
+
+
+# create n str
+def visual_create_n_str(x=20, fill=0):
+    out = ''
+    for i in range(x):
+        out += fill
+    return out
