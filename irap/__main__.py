@@ -188,7 +188,7 @@ def parse_software(args):
 def irap():
     parser = argparse.ArgumentParser(description='An Intelligent RAAC-PSSM Protein Prediction Package',
                                      fromfile_prefix_chars='@', conflict_handler='resolve')
-    subparsers = parser.add_subparsers(help='RPCT help')
+    subparsers = parser.add_subparsers(help='IRAP help')
     # make database
     parser_ma = subparsers.add_parser('makedb', add_help=False, help='make database')
     parser_ma.add_argument('file', nargs=1, help='fasta database name')
