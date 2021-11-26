@@ -17,6 +17,7 @@ from sklearn import svm
 from sklearn import model_selection
 from sklearn.metrics import roc_curve, auc
 import Load as iload
+import Reduce as ired
 import Feature as ifeat
 import Visual as ivis
 now_path = os.getcwd()
@@ -570,87 +571,3 @@ def plot_ssc(file, type_r, out=now_path):
     title_ssc = "type" + type_r
     out_path = os.path.join(out, file + "_type" + type_r + "_SSC.html")
     plot_ssc_sankey(nodes, linkes, title_ssc, out_path)
-
-
-# reduce ######################################################################
-def plot_reduce_sq(sq, raalist):
-    new_sq = ''
-    for i in sq:
-        for j in raalist:
-            if i in j:
-                new_sq += j[0]
-    return new_sq
-
-
-def plot_reduce_xy(aa, x, y, color):
-    out = '<rect width="18" height="22" x="' + str(x - 9) + '" y="' + str(y - 11) + '" fill="' + color[aa] + '"></rect><text fill="white" x="' + str(x) + '" y="' + str(y) + '" text-anchor="middle" dy="6">' + aa + '</text><text fill="#333333" x="' + str(x) + '" y="' + str(y + 22) + '" text-anchor="middle" dy="5">|</text>'
-    return out
-
-
-def plot_reduce_rexy(aa, x, y, color):
-    out = '<rect width="18" height="22" x="' + str(x - 9) + '" y="' + str(y + 33) + '" fill="' + color[aa] + '"></rect><text fill="white" x="' + str(x) + '" y="' + str(y + 44) + '" text-anchor="middle" dy="6">' + aa + '</text>'
-    return out
-
-
-def plot_reduce_svg(sq, resq, out):
-    head = '<svg xmlns="http://www.w3.org/2000/svg" width="1924" height="274">'
-    end = '</svg>'
-    color = {'A':'#f3a683', 'R':'#f7d794', 'N':'#778beb', 'D':'#e77f67', 'C':'#cf6a87', 'Q':'#f19066', 'E':'#f5cd79', 'G':'#546de5', 'H':'#e15f41', 'I':'#c44569', 'L':'#786fa6', 'K':'#f8a5c2', 'M':'#63cdda', 'F':'#ea8685', 'P':'#596275', 'S':'#574b90', 'T':'#f78fb3', 'W':'#3dc1d3', 'Y':'#e66767', 'V':'#303952'}
-    y = 16
-    mid = ''
-    for i in range(int(len(sq)/50)+1):
-        eachsq = sq[i*50:(i+1)*50]
-        eachresq = resq[i*50:(i+1)*50]
-        x = 106
-        each_natural = '<text fill="#333333" x="5" y="' + str(y) + '" dy="6">Natural   ' + str(i*50) + '</text>'
-        mid += each_natural
-        for j in range(len(eachsq)):
-            x += 18
-            mid += plot_reduce_xy(eachsq[j], x, y, color)
-        x = 106
-        each_reduce = '<text fill="#333333" x="5" y="' + str(y + 44) + '" dy="6">Reduced   ' + str(i*50) + '</text>'
-        mid += each_reduce
-        for j in range(len(eachsq)):
-            x += 18
-            mid += plot_reduce_rexy(eachresq[j], x, y, color)
-        y += 88
-    all_data = head + mid + end
-    with open(out + 'reduce.svg', 'w') as f:
-        f.write(all_data)
-
-
-def plot_reduce_save(sq, resq, out):
-    with open(out + 'sq.txt', 'w') as f:
-        f.write('>' + out + 'Natural\n' + sq + '\n>' + out + 'Reduce\n' + resq)
-        
-
-def plot_reduce(file, tp='file', out=now_path, reduce=None, raatp=None):
-    # get sequence
-    if tp == 'file':
-        sq = iload.load_fasta_file(file)
-    else:
-        sq = file
-    # get raalist
-    if reduce == None:
-        raaBook = os.path.join(raac_path, 'raaCODE')
-        raacode = iload.load_raac(raaBook)
-        raalist = raacode[0]['0001-t1s2']
-    else:
-        if raatp == None:
-            raaBook = os.path.join(raac_path, reduce)
-            raacode = iload.load_raac(raaBook)
-            raalist = raacode[0]['0001-t1s2']
-        else:
-            raaBook = os.path.join(raac_path, reduce)
-            raacode = iload.load_raac(raaBook)
-            raalist = raacode[0][raatp]
-    # get reduce sequence
-    resq = plot_reduce_sq(sq, raalist)
-    # save
-    if out == now_path:
-        now_time = ivis.visual_timestamp()
-        out = os.path.join(now_path, now_time + '-')
-    # plot
-    plot_reduce_svg(sq, resq, out)
-    # save
-    plot_reduce_save(sq, resq, out)

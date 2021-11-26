@@ -20,6 +20,7 @@ def window():
         from . import Weblogo as iweb
         from . import Version
         from . import Res
+        from . import Reduce as ired
     except:
         import Load as iload
         import Read as iread
@@ -31,6 +32,7 @@ def window():
         from . import Weblogo as iweb
         import Version
         import Res
+        import Reduce as ired
     
     # create messagebox ###########################################################
     
@@ -123,28 +125,64 @@ def window():
         b_mmw_back.pack(side='bottom',fill='x')
         mmw.mainloop()
     
-    def messagebox_intlen():
+    def messagebox_irap():
         #fuction
         def gui_exit():
             miw.destroy()
             miw.quit()
         def gui_mil():
-            mil_t = e_mil_t.get()
-            mil_p = e_mil_p.get()
-            mil_e = e_mil_e.get()
-            mil_cg = e_mil_cg.get()
-            mil_m = e_mil_m.get()
-            if len(mil_t) != 0 and len(mil_p) != 0 and len(mil_e) != 0 and len(mil_cg) != 0 and len(mil_m) != 0:
-                print('\n>>>Integrated Learning...\n')
-                print('暂不可用')
-                # Intlen.intlen_main(mil_t, mil_p, mil_e, mil_cg, mil_m, now_path)
-                v_command = 'intlen\t-tf ' + mil_t + ' -pf ' + mil_p + ' -ef ' + mil_e + ' -cg ' + mil_cg + ' -m ' + mil_m
+            mil_tp = e_mil_tp.get()
+            mil_tn = e_mil_tn.get()
+            mil_pp = e_mil_pp.get()
+            mil_pn = e_mil_pp.get()
+            mil_db = e_mil_db.get()
+            mil_r = e_mil_r.get()
+            mil_s = e_mil_s.get()
+            if len(mil_tp) != 0 and len(mil_tn) != 0 and len(mil_pp) != 0 and len(mil_pn) != 0:
+                if mil_db == '':
+                    mil_db = 'pdbaa'
+                if mil_r == '':
+                    mil_r = 'minCODE'
+                if mil_s == '':
+                    mil_s = 'rf'
+                print('\n>>>Easy IRAP...\n')
+                
+                iread.read_read(mil_tp, 'tp')
+                iread.read_read(mil_tn, 'tn')
+                iread.read_read(mil_pp, 'pp')
+                iread.read_read(mil_pn, 'pn')
+                iread.read_ray_blast('tp', 'pssm-tp', db=mil_db, n='3', ev='0.001')
+                iread.read_ray_blast('tn', 'pssm-tn', db=mil_db, n='3', ev='0.001')
+                iread.read_ray_blast('pp', 'pssm-pp', db=mil_db, n='3', ev='0.001')
+                iread.read_ray_blast('pn', 'pssm-pn', db=mil_db, n='3', ev='0.001')
+                iread.read_extract_raabook('pssm-tp', 'pssm-tn', 'Train_features', mil_r)
+                iread.read_extract_raabook('pssm-pp', 'pssm-pn', 'Predict_features', mil_r)
+                isvm.svm_set_hys(os.path.join(now_path, 'Train_features'), c=8, g=0.125, out='Train_hys.txt')
+                file = iread.read_extract_folder('Train_features', 'Train_hys.txt', 5, 'Evaluates')
+                feature_file = os.path.join(os.path.join(now_path, 'Train_features'), file)
+                predict_file = os.path.join(os.path.join(now_path, 'Predict_features'), file)
+                best_c, best_g = isvm.svm_grid(feature_file)
+                if mil_s == 'rf':
+                    fs_number = iselect.select_svm_rf(feature_file, c=best_c, g=best_g, cv=5, cycle=100, out_path=os.path.join(now_path, 'Select_result'), raaBook=mil_r)
+                    fs_number = str(fs_number)
+                    iload.load_svm_feature(feature_file, os.path.join('Select_result', 'Fsort-rf.txt'), int(fs_number), out='feature-' + fs_number + '.rap')
+                    iload.load_svm_feature(predict_file, os.path.join('Select_result', 'Fsort-rf.txt'), int(fs_number), out='predict-' + fs_number + '.rap')
+                else:
+                    fs_number = iselect.select_svm_pca(feature_file, c=best_c, g=best_g, cv=5, out_path=os.path.join(now_path, 'Select_result'), raaBook=mil_r)
+                    fs_number = str(fs_number)
+                    iload.load_svm_feature(feature_file, os.path.join('Select_result', 'Fsort-pca.txt'), int(fs_number), out='feature-' + fs_number + '.rap')
+                    iload.load_svm_feature(predict_file, os.path.join('Select_result', 'Fsort-pca.txt'), int(fs_number), out='predict-' + fs_number + '.rap')
+                best_c, best_g = isvm.svm_grid('feature-' + fs_number + '.rap')
+                iload.load_model_save_file('feature-' + fs_number + '.rap', c=best_c, g=best_g, out='feature-' + fs_number + '.model')
+                isvm.svm_predict('predict-' + fs_number + '.rap', 'feature-' + fs_number + '.model', out='predict-' + fs_number + '-result.csv')
+
+                v_command = 'easy\t-tp ' + mil_tp + ' -tn ' + mil_tn + ' -pp ' + mil_pp + ' -pn ' + mil_pn + ' -db ' + mil_db + ' -raa ' + mil_r + ' -s ' + mil_s
                 v_command = same_len(v_command)
                 var.set(v_command)
                 cmd.insert('end', '\n' + v_command)
         #new window
         miw =  tk.Toplevel(window) 
-        miw.title('Integrated Learning')
+        miw.title('Easy IRAP')
         miw.geometry('560x80')
         miw.iconbitmap(os.path.join(os.path.join(file_path, 'bin'), 'Logo.ico'))
         #integrated learning
@@ -156,30 +194,40 @@ def window():
         milf_2_1.pack(side='top',fill='x')
         milf_2_2 = tk.Frame(milf_2)
         milf_2_2.pack(side='bottom',fill='x')
-        ######train file
-        tk.Label(milf_1,text='train features',width=11,anchor='w').pack(side='left')
-        e_mil_t = tk.Entry(milf_1,show=None,width=10,font=('SimHei', 11))
-        e_mil_t.pack(side='left')
+        ######train positive file
+        tk.Label(milf_1,text='train pos-file',width=11,anchor='w').pack(side='left')
+        e_mil_tp = tk.Entry(milf_1,show=None,width=10,font=('SimHei', 11))
+        e_mil_tp.pack(side='left')
         tk.Label(milf_1,text='',width=2,anchor='w').pack(side='left')
-        ######predict file
-        tk.Label(milf_1,text='predict features',width=13,anchor='w').pack(side='left')
-        e_mil_p = tk.Entry(milf_1,show=None,width=10,font=('SimHei', 11))
-        e_mil_p.pack(side='left')
+        ######train negative file
+        tk.Label(milf_1,text='train neg-file',width=11,anchor='w').pack(side='left')
+        e_mil_tn = tk.Entry(milf_1,show=None,width=10,font=('SimHei', 11))
+        e_mil_tn.pack(side='left')
         tk.Label(milf_1,text='',width=2,anchor='w').pack(side='left')
-        ######eval file
-        tk.Label(milf_1,text='evaluate file',width=10,anchor='w').pack(side='left')
-        e_mil_e = tk.Entry(milf_1,show=None,width=10,font=('SimHei', 11))
-        e_mil_e.pack(side='left')
+        ######predict positive file
+        tk.Label(milf_1,text='predict pos-file',width=13,anchor='w').pack(side='left')
+        e_mil_pp = tk.Entry(milf_1,show=None,width=10,font=('SimHei', 11))
+        e_mil_pp.pack(side='left')
         tk.Label(milf_1,text='',width=2,anchor='w').pack(side='left')
-        ######cg file
-        tk.Label(milf_2_1,text='cg file',width=5,anchor='w').pack(side='left')
-        e_mil_cg = tk.Entry(milf_2_1,show=None,width=20,font=('SimHei', 11))
-        e_mil_cg.pack(side='left')
+        ######predict negative file
+        tk.Label(milf_2_1,text='predict neg-file',width=13,anchor='w').pack(side='left')
+        e_mil_pn = tk.Entry(milf_2_1,show=None,width=10,font=('SimHei', 11))
+        e_mil_pn.pack(side='left')
         tk.Label(milf_2_1,text='',width=2,anchor='w').pack(side='left')
-        ######member
-        tk.Label(milf_2_1,text='member',width=7,anchor='w').pack(side='left')
-        e_mil_m = tk.Entry(milf_2_1,show=None,width=4,font=('SimHei', 11))
-        e_mil_m.pack(side='left')
+        ######database
+        tk.Label(milf_2_1,text='database',width=8,anchor='w').pack(side='left')
+        e_mil_db = tk.Entry(milf_2_1,show=None,width=4,font=('SimHei', 11))
+        e_mil_db.pack(side='left')
+        tk.Label(milf_2_1,text='',width=2,anchor='w').pack(side='left')
+        ######raacode
+        tk.Label(milf_2_1,text='raac',width=4,anchor='w').pack(side='left')
+        e_mil_r = tk.Entry(milf_2_1,show=None,width=4,font=('SimHei', 11))
+        e_mil_r.pack(side='left')
+        tk.Label(milf_2_1,text='',width=2,anchor='w').pack(side='left')
+        ######select
+        tk.Label(milf_2_1,text='select',width=6,anchor='w').pack(side='left')
+        e_mil_s = tk.Entry(milf_2_1,show=None,width=4,font=('SimHei', 11))
+        e_mil_s.pack(side='left')
         tk.Label(milf_2_1,text='',width=2,anchor='w').pack(side='left')
         ######button
         b_mil = tk.Button(milf_2_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_mil)
@@ -549,13 +597,12 @@ def window():
         def gui_res():
             var.set('View Reduce Sequence by target fasta file')
             red_f = e_red_f.get()
-            red_b = e_red_b.get()
             red_r = e_red_r.get()
             red_o = e_red_o.get()
-            if len(red_f) != 0 and len(red_b) != 0 and len(red_r) != 0 and len(red_o) != 0:
+            if len(red_f) != 0 and len(red_r) != 0 and len(red_o) != 0:
                 print('\n>>>Drawing...\n')
-                iplot.plot_reduce(red_f, reduce=red_b, raatp=red_r, out=red_o)
-                v_command = 'reduce\t' + red_f + ' -raa ' + red_b + ' -r ' + red_r + ' -o ' + red_o
+                ired.reduce(file=red_f, out=red_o, raa=red_r)
+                v_command = 'reduce\t' + red_f + ' -raa ' + red_r + ' -o ' + red_o
                 v_command = same_len(v_command)
                 var.set(v_command)
                 cmd.insert('end', '\n' + v_command)
@@ -565,42 +612,33 @@ def window():
         #new window
         mrq =  tk.Toplevel(window) 
         mrq.title('View Sequence Reduce WebLogo')
-        mrq.geometry('480x80')
+        mrq.geometry('500x60')
         mrq.iconbitmap(os.path.join(os.path.join(file_path, 'bin'), 'Logo.ico'))
         #res
         mrqf_1 = tk.Frame(mrq)
         mrqf_2 = tk.Frame(mrq)
         mrqf_1.pack(side='top',fill='x')
         mrqf_2.pack(side='bottom',fill='x')
-        mrqf_2_1 = tk.Frame(mrqf_2)
-        mrqf_2_1.pack(side='top',fill='x')
-        mrqf_2_2 = tk.Frame(mrqf_2)
-        mrqf_2_2.pack(side='bottom',fill='x')
         ######file
-        tk.Label(mrqf_1,text='Fasta file',width=10,anchor='w').pack(side='left')
-        e_red_f = tk.Entry(mrqf_1,show=None,width=20,font=('SimHei', 11))
+        tk.Label(mrqf_1,text='file',width=4,anchor='w').pack(side='left')
+        e_red_f = tk.Entry(mrqf_1,show=None,width=10,font=('SimHei', 11))
         e_red_f.pack(side='left')
         tk.Label(mrqf_1,text='',width=2,anchor='w').pack(side='left')
-        ######book
-        tk.Label(mrqf_1,text='RAAC Book',width=10,anchor='w').pack(side='left')
-        e_red_b = tk.Entry(mrqf_1,show=None,width=10,font=('SimHei', 11))
-        e_red_b.pack(side='left')
-        tk.Label(mrqf_1,text='',width=2,anchor='w').pack(side='left')
         ######reduce
-        tk.Label(mrqf_2_1,text='Reduce Type',width=12,anchor='w').pack(side='left')
-        e_red_r = tk.Entry(mrqf_2_1,show=None,width=6,font=('SimHei', 11))
+        tk.Label(mrqf_1,text='raacode',width=7,anchor='w').pack(side='left')
+        e_red_r = tk.Entry(mrqf_1,show=None,width=10,font=('SimHei', 11))
         e_red_r.pack(side='left')
-        tk.Label(mrqf_2_1,text='',width=2,anchor='w').pack(side='left')
+        tk.Label(mrqf_1,text='',width=2,anchor='w').pack(side='left')
         ######out
-        tk.Label(mrqf_2_1,text='out',width=4,anchor='w').pack(side='left')
-        e_red_o = tk.Entry(mrqf_2_1,show=None,width=20,font=('SimHei', 11))
+        tk.Label(mrqf_1,text='out',width=4,anchor='w').pack(side='left')
+        e_red_o = tk.Entry(mrqf_1,show=None,width=10,font=('SimHei', 11))
         e_red_o.pack(side='left')
-        tk.Label(mrqf_2_1,text='',width=2,anchor='w').pack(side='left')
+        tk.Label(mrqf_1,text='',width=2,anchor='w').pack(side='left')
         ######button
-        b_rq_draw = tk.Button(mrqf_2_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_res)
+        b_rq_draw = tk.Button(mrqf_1,text='run',font=('SimHei', 11),width=5,height=1,command=gui_res)
         b_rq_draw.pack(side='right')
         #exit
-        b_mrq_back = tk.Button(mrqf_2_2,text='Exit',font=('SimHei',11),bg='#75E4D7',relief='flat',
+        b_mrq_back = tk.Button(mrqf_2,text='Exit',font=('SimHei',11),bg='#75E4D7',relief='flat',
                            height=1,command=gui_exit)
         b_mrq_back.pack(side='bottom',fill='x')
         mrq.mainloop()
@@ -741,7 +779,6 @@ def window():
     
     def messagebox_lblast():
         iload.load_blast()
-        iload.load_pdbaa()
     
     # Function Class ##############################################################
     
@@ -1425,7 +1462,7 @@ def window():
     #tools menu
     toolmenu = tk.Menu(root_menu,tearoff=0)
     root_menu.add_cascade(label='Tools', menu=toolmenu)
-    toolmenu.add_command(label='Integrated Learning',command=messagebox_intlen)
+    toolmenu.add_command(label='Easy IRAP',command=messagebox_irap)
     toolmenu.add_command(label='Multprocess',command=messagebox_help_Multprocess)
     toolmenu.add_command(label='Principal Component Analysis',command=messagebox_pca)
     toolmenu.add_command(label='Self Reduce Amino Acids Code',command=messagebox_raa)

@@ -45,7 +45,8 @@ def read_grid_folder(folder):
 
 def read_extract_folder(folder, cg, cv, out):
     pssm_path = iload.load_reload_folder(os.path.join(now_path, folder))
-    ieval.evaluate_folder(pssm_path, cg=cg, cv=cv, out=os.path.join(now_path, out))
+    file = ieval.evaluate_folder(pssm_path, cg=cg, cv=cv, out=os.path.join(now_path, out))
+    return file
 
 def read_model_save_folder(folder, cg, out):
     pssm_path = iload.load_reload_folder(os.path.join(now_path, folder))

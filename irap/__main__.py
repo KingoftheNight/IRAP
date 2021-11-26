@@ -16,6 +16,7 @@ try:
     from . import Version
     from . import Windows
     from . import Res
+    from . import Reduce as ired
     from . import Weblogo as iweb
 except:
     import Load as iload
@@ -29,11 +30,13 @@ except:
     import Version
     import Windows
     import Res
+    import Reduce as ired
     import Weblogo as iweb
 ivis.visual_create_blast(file_path)
 ivis.visual_create_aaindex(file_path)
 ivis.visual_create_raac(file_path)
 ivis.visual_create_bin(file_path)
+iload.load_blast()
 
 
 # fuctions ####################################################################
@@ -131,13 +134,6 @@ def parse_res(args):
     Res.res(args.rule_id[0])
 
 
-# integrated learning
-def parse_intlen(args):
-    print('暂不可用')
-    #Intlen.intlen_main(args.train_features[0], args.predict_features[0], args.eval_file[0], args.cg_file[0],
-    #                   args.member[0], now_path)
-
-
 # principal component analysis
 def parse_pca(args):
     iselect.select_svm_pca(args.file[0], c=float(args.c_number[0]), g=float(args.gamma[0]), cv=int(args.cross_validation[0]), out_path=os.path.join(now_path, args.output[0]))
@@ -165,12 +161,18 @@ def parse_pssmlogo(args):
 
 # reduce sequence
 def parse_reducesq(args):
-    iplot.plot_reduce(args.file[0], reduce=args.raa_name[0], raatp=args.reduce_type[0], out=args.out[0])
+    ired.reduce(file=args.file[0], out=args.out[0], raa=args.raacode[0])
 
 
 # weblogo
 def parse_weblogo(args):
-    iweb.weblogo(file=args.file[0], out=args.out[0])
+    if args.file:
+        iweb.weblogo(file=args.file[0], out=args.out[0])
+    if args.folder:
+        if args.label:
+            iweb.weblogo_multy(folder=args.folder[0], out=args.out[0], label=args.label[0].split(','))
+        else:
+            iweb.weblogo_multy(folder=args.folder[0], out=args.out[0])
 
 
 # windows
@@ -181,7 +183,38 @@ def parse_windows(args):
 # load blast software
 def parse_software(args):
     iload.load_blast()
-    iload.load_pdbaa()
+
+
+# easy irap function
+def parse_easy(args):
+    iread.read_read(args.train_posfile[0], 'tp')
+    iread.read_read(args.train_negfile[0], 'tn')
+    iread.read_read(args.predict_posfile[0], 'pp')
+    iread.read_read(args.predict_negfile[0], 'pn')
+    iread.read_ray_blast('tp', 'pssm-tp', db=args.database[0], n='3', ev='0.001')
+    iread.read_ray_blast('tn', 'pssm-tn', db=args.database[0], n='3', ev='0.001')
+    iread.read_ray_blast('pp', 'pssm-pp', db=args.database[0], n='3', ev='0.001')
+    iread.read_ray_blast('pn', 'pssm-pn', db=args.database[0], n='3', ev='0.001')
+    iread.read_extract_raabook('pssm-tp', 'pssm-tn', 'Train_features', args.raacode[0])
+    iread.read_extract_raabook('pssm-pp', 'pssm-pn', 'Predict_features', args.raacode[0])
+    isvm.svm_set_hys(os.path.join(now_path, 'Train_features'), c=8, g=0.125, out='Train_hys.txt')
+    file = iread.read_extract_folder('Train_features', 'Train_hys.txt', 5, 'Evaluates')
+    feature_file = os.path.join(os.path.join(now_path, 'Train_features'), file)
+    predict_file = os.path.join(os.path.join(now_path, 'Predict_features'), file)
+    best_c, best_g = isvm.svm_grid(feature_file)
+    if args.select[0] == 'rf':
+        fs_number = iselect.select_svm_rf(feature_file, c=best_c, g=best_g, cv=5, cycle=100, out_path=os.path.join(now_path, 'Select_result'), raaBook=args.raacode[0])
+        fs_number = str(fs_number)
+        iload.load_svm_feature(feature_file, os.path.join('Select_result', 'Fsort-rf.txt'), int(fs_number), out='feature-' + fs_number + '.rap')
+        iload.load_svm_feature(predict_file, os.path.join('Select_result', 'Fsort-rf.txt'), int(fs_number), out='predict-' + fs_number + '.rap')
+    else:
+        fs_number = iselect.select_svm_pca(feature_file, c=best_c, g=best_g, cv=5, out_path=os.path.join(now_path, 'Select_result'), raaBook=args.raacode[0])
+        fs_number = str(fs_number)
+        iload.load_svm_feature(feature_file, os.path.join('Select_result', 'Fsort-pca.txt'), int(fs_number), out='feature-' + fs_number + '.rap')
+        iload.load_svm_feature(predict_file, os.path.join('Select_result', 'Fsort-pca.txt'), int(fs_number), out='predict-' + fs_number + '.rap')
+    best_c, best_g = isvm.svm_grid('feature-' + fs_number + '.rap')
+    iload.load_model_save_file('feature-' + fs_number + '.rap', c=best_c, g=best_g, out='feature-' + fs_number + '.model')
+    isvm.svm_predict('predict-' + fs_number + '.rap', 'feature-' + fs_number + '.model', out='predict-' + fs_number + '-result.csv')
 
 
 # argparse ####################################################################
@@ -217,7 +250,7 @@ def irap():
     parser_ex.add_argument('-raa', '--reduce_aa', nargs=1, type=str, help='reduce amino acid file')
     parser_ex.add_argument('-o', '--output', nargs=1, type=str, help='output folder')
     parser_ex.add_argument('-l', '--lmda', nargs=1, type=str, help='sliding window lmda')
-    # parser_ex.add_argument('-r', '--self_raac', nargs=1, type=str, help='self raac')
+    parser_ex.add_argument('-r', '--self_raac', nargs=1, type=str, help='self raac')
     parser_ex.set_defaults(func=parse_extract)
     # grid search
     parser_se = subparsers.add_parser('search', add_help=False, help='search c_number and gamma for training')
@@ -278,14 +311,6 @@ def irap():
     parser_rs = subparsers.add_parser('res', add_help=False, help='reduce aa by personal rules')
     parser_rs.add_argument('rule_id', nargs='+', help='input aa property ID')
     parser_rs.set_defaults(func=parse_res)
-    # integrated learning
-    parser_in = subparsers.add_parser('intlen', add_help=False, help='integrated learning with majority vote')
-    parser_in.add_argument('-tf', '--train_features', nargs=1, help='input train features file')
-    parser_in.add_argument('-pf', '--predict_features', nargs=1, help='input predict features file')
-    parser_in.add_argument('-ef', '--eval_file', nargs=1, help='input evaluate file')
-    parser_in.add_argument('-cg', '--cg_file', nargs=1, help='input hyperparameter file')
-    parser_in.add_argument('-m', '--member', nargs=1, help='choose train models number')
-    parser_in.set_defaults(func=parse_intlen)
     # PCA
     parser_pc = subparsers.add_parser('pca', add_help=False, help='principal component analysis')
     parser_pc.add_argument('file', nargs=1, help='input features file')
@@ -324,14 +349,15 @@ def irap():
     # reduce
     parser_rq = subparsers.add_parser('reduce', add_help=False, help='sequence reduce')
     parser_rq.add_argument('file', nargs=1, help='input PSSM file')
-    parser_rq.add_argument('-raa', '--raa_name', nargs=1, help='reduce amino acid file')
-    parser_rq.add_argument('-r', '--reduce_type', nargs=1, help='reduce type and size')
+    parser_rq.add_argument('-raa', '--raacode', nargs=1, help='reduce amino acid code')
     parser_rq.add_argument('-o', '--out', nargs=1, help='output file name')
     parser_rq.set_defaults(func=parse_reducesq)
     # weblogo
     parser_wo = subparsers.add_parser('weblogo', add_help=False, help='weblogo')
-    parser_wo.add_argument('file', nargs=1, help='input PSSM file')
+    parser_wo.add_argument('-d', '--file', nargs=1, help='input PSSM file')
+    parser_wo.add_argument('-f', '--folder', nargs=1, help='input PSSM folder')
     parser_wo.add_argument('-o', '--out', nargs=1, help='output file name')
+    parser_wo.add_argument('-l', '--label', nargs=1, help='label of each line, split by ,')
     parser_wo.set_defaults(func=parse_weblogo)
     # windows
     parser_ws = subparsers.add_parser('windows', add_help=False, help='open windows GUI')
@@ -342,7 +368,16 @@ def irap():
     # lblast
     parser_st = subparsers.add_parser('lblast', add_help=False, help='load blast software')
     parser_st.set_defaults(func=parse_software)
-    
+    # easy
+    parser_ey = subparsers.add_parser('easy', add_help=False, help='easy irap function')
+    parser_ey.add_argument('-tp', '--train_posfile', nargs=1, help='train positive file name')
+    parser_ey.add_argument('-tn', '--train_negfile', nargs=1, help='train negative file name')
+    parser_ey.add_argument('-pp', '--predict_posfile', nargs=1, help='predict positive file name')
+    parser_ey.add_argument('-pn', '--predict_negfile', nargs=1, help='predict negative file name')
+    parser_ey.add_argument('-db', '--database', nargs=1, help='blast database')
+    parser_ey.add_argument('-raa', '--raacode', nargs=1, help='reduce amino acid codes')
+    parser_ey.add_argument('-s', '--select', nargs=1, help='feature selection method')
+    parser_ey.set_defaults(func=parse_easy)
     
     args = parser.parse_args()
     try:

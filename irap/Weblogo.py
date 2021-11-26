@@ -1,11 +1,9 @@
 import os
 import sys
-import numpy as np
 import math
-now_path = os.getcwd()
-file_path = os.path.dirname(__file__)
-sys.path.append(file_path)
 import time
+import numpy as np
+now_path = os.getcwd()
 
 # 创建定义列表
 def visual_create_n_matrix(x=20, fill=0):
@@ -45,6 +43,13 @@ def weblogo_read(file):
         if '>' not in i:
             out.append(i.strip('\n'))
     return out
+
+# 读取fasta文件夹
+def weblogo_read_folder(folder):
+    data = []
+    for file in os.listdir(folder):
+        data.append(weblogo_read(os.path.join(folder, file)))
+    return data
 
 # 数据转信息熵
 def weblogo_check(value):
@@ -338,22 +343,35 @@ def weblogo(file=None, data=None, out=now_path, tp='p'):
     weblogo_plot([value], ['bits'], [gap_max], out=out, tp=tp)
 
 # main 多图
-def weblogo_multy(data=None, label=None, out=now_path, tp='p'):
+def weblogo_multy(folder=None, data=None, label=None, out=now_path, tp='p'):
     # 时间戳
     time_id = visual_timestamp()
     if data == None:
-        return data
+        data = weblogo_read_folder(folder)
     else:
-        # 配置y轴标签
-        label = weblogo_label(label, len(data))
-        if out == now_path:
-            out = os.path.join(out, time_id + '.svg')
-        # 提取信息熵矩阵
-        value = []
-        gap_list = []
-        for i in data:
-            mid, gap_max = weblogo_count(i, tp=tp)
-            value.append(mid)
-            gap_list.append(gap_max)
-        # 绘图
-        weblogo_plot(value, label, gap_list, out=out, tp=tp)
+        data = data
+    # 配置y轴标签
+    label = weblogo_label(label, len(data))
+    if out == now_path:
+        out = os.path.join(out, time_id + '.svg')
+    # 提取信息熵矩阵
+    value = []
+    gap_list = []
+    for i in data:
+        mid, gap_max = weblogo_count(i, tp=tp)
+        value.append(mid)
+        gap_list.append(gap_max)
+    # 绘图
+    weblogo_plot(value, label, gap_list, out=out, tp=tp)
+
+if __name__ == '__main__':
+    requests = sys.argv[1:]
+    f, file, out, tp = requests[0], requests[1], requests[2], requests[3]
+    if f == '-d':
+        weblogo(file=file, out=out, tp=tp)
+    elif f == '-f':
+        label = requests[-1]
+        if len(label) != 0 and label != tp:
+            weblogo_multy(folder=file, out=out, tp=tp, label=label.split(','))
+        else:
+            weblogo_multy(folder=file, out=out, tp=tp)

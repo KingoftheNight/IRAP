@@ -95,19 +95,28 @@ def evaluate_file(file, c=8, g=0.125, cv=5, out=None):
 def evaluate_folder(path, cg=None, cv=5, out=None):
     eval_value = []
     eval_key = []
+    best_rap = ''
     if cg != None:
         cg_box = iload.load_hys(cg)
         for i in path:
+            best_acc = 0
             if cg_box[i][1] == 0:
                 cg_box[i][1] = 0.01
             test_label, predict_label = isvm.svm_evaluate(i, cg_box[i][0], cg_box[i][1], cv)
             eval_value.append(evaluate_score(test_label, predict_label))
             eval_key.append(os.path.split(i)[-1].split('-')[1])
+            if eval_value[-1][4] >= best_acc:
+                best_rap = i
+                best_acc = eval_value[-1][4]
     else:
         for i in path:
+            best_acc = 0
             test_label, predict_label = isvm.svm_evaluate(i, 8, 0.125, cv)
             eval_value.append(evaluate_score(test_label, predict_label))
             eval_key.append(os.path.split(i)[-1].split('-')[1])
+            if eval_value[-1][4] >= best_acc:
+                best_rap = i
+                best_acc = eval_value[-1][4]
     if out != None:
         if os.path.split(out)[-1] not in os.listdir(os.path.split(out)[0]):
             os.makedirs(out)
@@ -125,5 +134,6 @@ def evaluate_folder(path, cg=None, cv=5, out=None):
         # plot
         cluster_t, cluster_s, t_index, s_index = evaluate_cluster(eval_value, eval_key)
         iplot.plot_evaluate(cluster_t, t_index, out, cluster_s, s_index, eval_value, eval_key)
+        return os.path.split(best_rap)[-1]
     else:
         return [('tp', 'tn', 'fp', 'fn', 'acc', 'sn', 'sp', 'ppv', 'mcc')] + eval_value

@@ -100,6 +100,7 @@ def select_svm_pca(in_path, c=8, g=0.125, cv=5, out_path=now_path, all_p=True):
             iplot.plot_select(fs_sort, fs_acc, os.path.join(out_path, 'Fsort-pca.png'))
         # save results
         select_save(os.path.join(out_path, 'Fsort-pca.txt'), fs_sort)
+        return fs_acc.index(max(fs_acc))
     else:
         # 读取文件
         np_data, np_label = iload.load_svmfile(in_path)
@@ -127,6 +128,7 @@ def select_np_pca(np_data, np_label, c=8, g=0.125, cv=5, out_path=now_path, in_p
         else:
             iplot.plot_select(fs_sort, fs_acc, os.path.join(out_path, 'Fsort-pca.png'))
         select_save(os.path.join(out_path, 'Fsort-pca.txt'), fs_sort)
+        return fs_acc.index(max(fs_acc))
     else:
         # PCA
         pd_data = pd.DataFrame(np_data)
@@ -246,7 +248,7 @@ def select_rf(np_data, np_label, cycle):
 
 
 # select rf main for svm
-def select_svm_rf(in_path, c=8, g=0.125, cv=5, cycle=50, out_path=now_path, all_p=True, raaBook='raaCODE'):
+def select_svm_rf(in_path, c=8, g=0.125, cv=5, cycle=50, out_path=now_path, all_p=True, raaBook='minCODE'):
     if out_path != None:
         if os.path.split(out_path)[1] not in os.listdir(os.path.split(out_path)[0]):
             os.makedirs(out_path)
@@ -264,6 +266,7 @@ def select_svm_rf(in_path, c=8, g=0.125, cv=5, cycle=50, out_path=now_path, all_
         else:
             iplot.plot_select(fs_sort, fs_acc, os.path.join(out_path, 'Fsort-rf.png'))
         select_save(os.path.join(out_path, 'Fsort-rf.txt'), fs_sort)
+        return fs_acc.index(max(fs_acc))
     else:
         # load svm
         np_data, np_label = iload.load_svmfile(in_path)
@@ -275,7 +278,7 @@ def select_svm_rf(in_path, c=8, g=0.125, cv=5, cycle=50, out_path=now_path, all_
 
 
 # select rf main for numpy
-def select_np_rf(np_data, np_label, c=8, g=0.125, cv=5, cycle=50, out_path=now_path, in_path=None, raaBook='raaCODE'):
+def select_np_rf(np_data, np_label, c=8, g=0.125, cv=5, cycle=50, out_path=now_path, in_path=None, raaBook='minCODE'):
     if out_path != None:
         if os.path.split(out_path)[1] not in os.listdir(os.path.split(out_path)[0]):
             os.makedirs(out_path)
@@ -291,6 +294,7 @@ def select_np_rf(np_data, np_label, c=8, g=0.125, cv=5, cycle=50, out_path=now_p
         else:
             iplot.plot_select(fs_sort, fs_acc, os.path.join(out_path, 'Fsort-rf.png'))
         select_save(os.path.join(out_path, 'Fsort-rf.txt'), fs_sort)
+        return fs_acc.index(max(fs_acc))
     else:
         # rf
         fs_sort, fs_weight = select_rf(np_data, np_label, cycle)

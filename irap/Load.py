@@ -284,23 +284,26 @@ def load_weblogo(matrix):
     return out
 
 
+def load_un_gz(file_name):
+    f_name = file_name.strip(".gz")
+    g_file = gzip.GzipFile(file_name)
+    open(f_name, "wb+").write(g_file.read())
+    g_file.close()
+
+
 # load blast database
 def load_pdbaa():
-    def un_gz(file_name):
-        f_name = file_name.strip(".gz")
-        g_file = gzip.GzipFile(file_name)
-        open(f_name, "wb+").write(g_file.read())
-        g_file.close()
     if 'pdbaa.pdb' not in os.listdir(os.path.join(file_path, 'blastDB')):
         url = 'https://ftp.ncbi.nlm.nih.gov/blast/db/pdbaa.tar.gz'
         save_path = os.path.join(file_path, 'pdbaa.tar.gz')
         if 'pdbaa.tar.gz' not in os.listdir(file_path):
             urllib.request.urlretrieve(url, filename=save_path)
-        un_gz(save_path)
+        load_un_gz(save_path)
         t = tarfile.open(save_path.strip(".gz"))
         t.extractall(path=os.path.join(file_path, 'blastDB'))
         t.close()
         os.remove(save_path.strip(".gz"))
+        print('\npdbaa database has been loaded successfully!')
     else:
         print('\npdbaa database has been loaded successfully!')
 
@@ -356,29 +359,43 @@ def load_precaution():
 
 # load blast database
 def load_blast():
-    print('\nWaiting...')
     if platform.system() == 'Windows':
         file1 = 'psiblast.exe'
         file2 = 'makeblastdb.exe'
         file3 = 'nghttp2.dll'
-        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file3
-        save_path = os.path.join(os.path.join(file_path, 'bin'), file3)
-        urllib.request.urlretrieve(url, filename=save_path)
-        print('\nconfiguration file has been loaded!')
+        if file3 not in os.listdir(os.path.join(file_path, 'bin')):
+            url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file3
+            save_path = os.path.join(os.path.join(file_path, 'bin'), file3)
+            urllib.request.urlretrieve(url, filename=save_path)
+            print('\nconfiguration file has been loaded!')
     else:
         file1 = 'psiblast'
         file2 = 'makeblastdb'
+    file4 = 'pdbaa.tar.gz'
+    file5 = 'README'
     if file1 not in os.listdir(os.path.join(file_path, 'bin')):
         url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file1
         save_path = os.path.join(os.path.join(file_path, 'bin'), file1)
         urllib.request.urlretrieve(url, filename=save_path)
         print('\npsiblast function has been loaded!')
-    else:
-        print('\npsiblast function has been loaded successfully!')
     if file2 not in os.listdir(os.path.join(file_path, 'bin')):
         url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file2
         save_path = os.path.join(os.path.join(file_path, 'bin'), file2)
         urllib.request.urlretrieve(url, filename=save_path)
         print('\nmakeblastdb function has been loaded!')
-    else:
-        print('\nmakeblastdb function has been loaded successfully!')
+    if file4 not in os.listdir(file_path):
+        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file4
+        save_path = os.path.join(file_path, file4)
+        urllib.request.urlretrieve(url, filename=save_path)
+        load_un_gz(save_path)
+        t = tarfile.open(save_path.strip(".gz"))
+        t.extractall(path=os.path.join(file_path, 'blastDB'))
+        t.close()
+        os.remove(save_path.strip(".gz"))
+        print('\npdbaa database has been loaded!')
+    if file5 not in os.listdir(file_path):
+        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file5
+        save_path = os.path.join(file_path, file5)
+        urllib.request.urlretrieve(url, filename=save_path)
+        print('\nprecaution has been loaded!')
+    
