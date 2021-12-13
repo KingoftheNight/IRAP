@@ -96,7 +96,7 @@ def plot_select_visual(data, all_values, type_p):
     plt.plot(x, all_values[4], color='pink', label='KMER')
     plt.plot(x, all_values[5], color='orange', label='SAAC')
     plt.plot(x, all_values[6], color='gray', label='OAAC')
-    plt.legend(bbox_to_anchor=(0., 1.09, 1., .102), loc=0, ncol=4, mode="expand", borderaxespad=0.)
+    plt.legend(bbox_to_anchor=(0., 1.03, 1., .102), loc=0, ncol=4, mode="expand", borderaxespad=0.)
     plt.xlabel("Feature Number")
     plt.ylabel("Acc")
     plt.title(type_p)
@@ -549,12 +549,12 @@ def plot_ssc_sankey(nodes, linkes, title_ssc, out):
             linestyle_opt=opts.LineStyleOpts(opacity=0.2, curve=0.5, color="source"),
             label_opts=opts.LabelOpts(position="right"),
         )
-        .set_global_opts(title_opts=opts.TitleOpts(title="约化图谱"), toolbox_opts=opts.ToolboxOpts(
+        .set_global_opts(title_opts=opts.TitleOpts(title="ReduceMap"), toolbox_opts=opts.ToolboxOpts(
                 is_show=True, pos_top="top", pos_left="right", feature={"saveAsImage": {}})
             )
         .render(out)
     )
-    print("约化图谱保存于 " + c)
+    print("ReduceMap has been saved at " + c)
 
 
 # ssc main

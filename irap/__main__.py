@@ -291,8 +291,6 @@ def irap():
     parser_fi.add_argument('-cv', '--cross_validation', nargs=1, help='5: 5-fold cross-validation   -1: jackknife')
     parser_fi.add_argument('-o', '--output', nargs=1, help='output file name')
     parser_fi.add_argument('-r', '--round', nargs=1, help='the number of test cycle')
-    # parser_fi.add_argument('-raac', '--reduce', nargs=1, help='raac book')
-    # parser_fi.add_argument('-t', '--type', nargs=1, help='raac type and size')
     parser_fi.set_defaults(func=parse_filter)
     # predict
     parser_pr = subparsers.add_parser('predict', add_help=False, help='evaluate models by predict files')

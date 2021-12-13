@@ -364,7 +364,7 @@ def load_blast():
         file2 = 'makeblastdb.exe'
         file3 = 'nghttp2.dll'
         if file3 not in os.listdir(os.path.join(file_path, 'bin')):
-            url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file3
+            url = 'http://bioinfor.imu.edu.cn/rpct/static/data/' + file3
             save_path = os.path.join(os.path.join(file_path, 'bin'), file3)
             urllib.request.urlretrieve(url, filename=save_path)
             print('\nconfiguration file has been loaded!')
@@ -374,17 +374,17 @@ def load_blast():
     file4 = 'pdbaa.tar.gz'
     file5 = 'README'
     if file1 not in os.listdir(os.path.join(file_path, 'bin')):
-        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file1
+        url = 'http://bioinfor.imu.edu.cn/rpct/static/data/' + file1
         save_path = os.path.join(os.path.join(file_path, 'bin'), file1)
         urllib.request.urlretrieve(url, filename=save_path)
         print('\npsiblast function has been loaded!')
     if file2 not in os.listdir(os.path.join(file_path, 'bin')):
-        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file2
+        url = 'http://bioinfor.imu.edu.cn/rpct/static/data/' + file2
         save_path = os.path.join(os.path.join(file_path, 'bin'), file2)
         urllib.request.urlretrieve(url, filename=save_path)
         print('\nmakeblastdb function has been loaded!')
     if file4 not in os.listdir(file_path):
-        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file4
+        url = 'http://bioinfor.imu.edu.cn/rpct/static/data/' + file4
         save_path = os.path.join(file_path, file4)
         urllib.request.urlretrieve(url, filename=save_path)
         load_un_gz(save_path)
@@ -394,7 +394,7 @@ def load_blast():
         os.remove(save_path.strip(".gz"))
         print('\npdbaa database has been loaded!')
     if file5 not in os.listdir(file_path):
-        url = 'http://bioinfor.imu.edu.cn/rpct/public/static/data/' + file5
+        url = 'http://bioinfor.imu.edu.cn/rpct/static/data/' + file5
         save_path = os.path.join(file_path, file5)
         urllib.request.urlretrieve(url, filename=save_path)
         print('\nprecaution has been loaded!')

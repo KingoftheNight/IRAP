@@ -66,7 +66,7 @@ def svm_grid_folder(path, out=False):
     for i in path:
         out_box[i] = svm_grid(i)
         if out != False:
-            file = i + '\tC_numbr: ' + str(round(out_box[i][0], 4)) + '\tGamma: ' + str(round(out_box[i][1])) + '\n'
+            file = i + '\tC_numbr: ' + str(round(out_box[i][0], 4)) + '\tGamma: ' + str(round(out_box[i][1], 4)) + '\n'
             with open(out, 'a') as f:
                 f.write(file)
     if out == False:

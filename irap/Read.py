@@ -18,7 +18,7 @@ def read_read(file, out):
 
 def read_blast(path, db, n, ev, out):
     pos_sq = iload.load_fasta_folder(file=None, out=os.path.join(os.path.join(now_path, 'Reads'), path))
-    pos_pssm = iblast.blast_psiblast_folder(pos_sq, db, n, ev, name=path, vi=False)
+    pos_pssm = iblast.blast_psiblast_folder(pos_sq, db, n, ev, name=out, vi=False)
 
 def read_extract_raabook(path1, path2, out, raa):
     pos_pssm = iload.load_reload_folder(os.path.join(os.path.join(now_path, 'PSSMs'), path1))
