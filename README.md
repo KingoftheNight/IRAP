@@ -1,46 +1,93 @@
-# RPCT
-A protein classification prediction toolkit based on RAAC-PSSM
-## Introduction
-The RPCT toolkit is a dedicated toolkit based on the RAAC-PSSM prot-ein classification prediction method. It uses 7 feature extraction methods and SVM for protein classification prediction. In addition, we have built convenient programs on both Windows and Linux platforms. User can run the RPCT_windows.py to open a GUI and submit commands quickly. Or user can run the RPCT_linux.py and submit commands directly.
-### Quick Start
-1. The RPCT package is written in Python. It is recommended to use [conda](https://www.anaconda.com/download/) to manage python packages. Or please make sure all the following packages are installed in their Python environment: ray, sklearn, blast, pyecharts.
-```
-# install packages by conda
-conda install package_name
+# IRAP
 
-# install blast+ by conda
-conda install -c bioconda blast
+An intelligent protein analysis package based on the Reduced Amino Acids Codes and Position Specific Scoring Matrix.
+
+## Introduction
+
+IRAP package is a dedicated python package for protein analysis. It can analyze the sequence and site characteristics of the protein through the Reduced Amino Acids Codes and Position Specific Scoring Matrix (RAAC-PSSM) method, and use Support Vector Machines (SVM) for protein function and site prediction. IRAP has built-in complete machine learning functions and personalized analysis modules, which can meet the general needs for sequence analysis. In addition, we provide users with convenient operation instructions on Windows system, Linux system and PythonIDE environment, respectively. In the following we will focus on the installation and application of IRAP under Linux system.
+## Installation
+The IRAP package needs to be run in a python environment. We recommend users to install via conda or pip. IRAP needs the support of pyecharts, scikit-learn, ray, joblib, and they will be installed automatically when you install IRAP. We published IRAP in the GitHub community, you need to install git first and then install IRAP through the following link.
+
+```bash
+# install git
+$conda install git
+
+# install IRAP by conda
+$conda install git+https://github.com/KingoftheNight/IRAP.git
+
+# install IRAP by pip
+
+$pip install git+https://github.com/KingoftheNight/IRAP.git
 ```
-2. Please convert the data to FASTA format.
-3. The RPCT toolkit supports both windows and linux platforms. Before you run RPCT, you should check your commands.
-#### Run RPCT by windows
+## Run IRAP by windows
+```bash
+$irap windows
 ```
-python RPCT_windows.py
+## Run IRAP by linux
+```bash
+$irap [Fuctions] <parameters>
 ```
-#### Run RPCT by linux
+## Load IRAP in PythonIDE
+
+```python
+from irap import SVM as isvm
+from irap import Load as iload
+from irap import Read as iread
+from irap import Extract as iextra
+from irap import Evaluate as ieval
+from irap import Select as iselect
 ```
-python RPCT_linux.py <Fuctions> <parameters>
-```
-### Usage For Linux
-#### 1. Read
-Load Fasta datasets and split them into separate fasta files.
-#### Command line
-```
-python RPCT_linux.py [read] file_name [-o] out_folder
+
+## Usage For Linux
+
+You can use the easy function to complete all the following processes in one step, and IRAP will automatically help you optimize all parameters.
+
+```bash
+$irap easy -tp file_name -tn file_name -pp file_name -pn file_name -db blast_database_name -raa RAACBook -s ifs_method
 
 # optional arguments:
-#   file_name  input your Fasta datasets name, and you should make sure your file in the current folder.
+#   -tp        input your train positive datasets name.
+#   -tn        input your train negative datasets name.
+#   -pp        input your predict positive datasets name.
+#   -pn        input your predict negative datasets name.
+#   -db        choose the blast database, or you can make your database through Makedb function (17).
+#   -raa       raac book saved in raacDB folder in IRAP, and we provide two RAACBook files with size 8 (minCODE) and size 671 (raaCODE).
+#   -s         choose the feature selection method, and we provide two method, rf (relief-fscore) and pca (pcasvd).
+```
+
+### Example
+
+```bash
+$irap easy -tp train_positive.fasta -tn train_negative.fasta -pp predict_positive.fasta -pn predict_negative.fasta -db pdbaa -raa minCODE -s rf
+```
+
+You can also run the following independent functions according to your needs.
+
+### 1. Read
+Load Fasta datasets and split them into separate fasta files.
+##### Command line
+```bash
+$irap read file_name -o out_folder
+
+# optional arguments:
+#   file_name  input your Fasta datasets name.
 #   -o         input the out folder name, and it will be saved by default in Reads folder.
 ```
-#### Example
+##### Example
+```bash
+$irap read train_positive.fasta -o train_p
+$irap read train_negative.fasta -o train_n
+$irap read predict_positive.fasta -o predict_p
+$irap read predict_negative.fasta -o predict_n
 ```
-python RPCT_linux.py read test_positive.fasta -o test_p
-```
-#### 2. Blast
-Get PSSM profiles through _psiblast_ function provided by _BLAST+_ (https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/).
-#### Command line
-```
-python RPCT_linux.py [blast] folder_name [-db] blast_database_name [-n] num_iterations [-ev] expected_value [-o] out_folder_name
+
+
+### 2. Blast
+
+Get PSSM profiles through psiblast function provided by _BLAST+_ (https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/).
+##### Command line
+```bash
+$irap blast folder_name -db blast_database_name -n num_iterations -ev expected_value -o out_folder_name
 
 # optional arguments:
 #   folder_name  input the Fasta folder name which has been created in Read function (1).
@@ -49,48 +96,52 @@ python RPCT_linux.py [blast] folder_name [-db] blast_database_name [-n] num_iter
 #   -ev          input the expected value.
 #   -o           input the out folder name, and it will be saved by default in PSSMs folder.
 ```
-#### Example
+##### Example
+```bash
+$irap blast train_p -db pdbaa -n 3 -ev 0.001 -o pssm-tp
+$irap blast train_n -db pdbaa -n 3 -ev 0.001 -o pssm-tn
+$irap blast predict_p -db pdbaa -n 3 -ev 0.001 -o pssm-pp
+$irap blast predict_n -db pdbaa -n 3 -ev 0.001 -o pssm-pn
 ```
-python RPCT_linux.py blast test_p -db pdbaa -n 3 -ev 0.001 -o pssm-tp
-```
-#### 3. Extract
-Extract PSSM files through RAAC-PSSM extraction method. And output them in a new document or folder.
+### 3. Extract
+Extract PSSM files through 7 extraction methods, and output them in a new folder.
 #### Command line
-```
-python RPCT_linux.py [extract] folder_name [-raa] raac_book_name [-o] out_folder [-l] windows_size [-r] self_raa_code
+```bash
+$irap extract folder_name_1 folder_name_2 -raa RAACBook -o out_folder -l windows_size -r self_raa_code
 
 # optional arguments:
 #   folder_name  input the two PSSM folders name which has been created in Blast function (2).
 #   -raa         raac book saved in raacDB folder in rpct, and you can not use this parameter and -r together.
-#   -o           if you choose the parameter -raa, you should input a folder name, and if you choose the parameter -r, you should input a file name.
-#   -l           input the window size for the RAAC-PSSM extraction method.
-#   -r           self_raa_code format should contain all amino acid types, and be separated by '-', for example: LVIMC-AGST-PHC-FYW-EDNQ-KR .
+#   -o           input the out folder name
+#   -l           input the window size for the RAACSW extraction method.
+#   -r           self_raa_code format should contain all amino acid types, and be separated by '-', for example: LVIMC-AGST-PHC-FYW-EDNQ-KR.
 ```
-#### Example
+##### Example
+```bash
+$irap extract pssm-tp pssm-tn -raa minCODE -o Train_fs -l 5
+$irap extract pssm-tp pssm-tn  -o Train_fs_sr -l 5 -r LVIMC-AGST-PHC-FYW-EDNQ-KR
+$irap extract pssm-pp pssm-pn -raa minCODE -o Predict_fs -l 5
 ```
-python RPCT_linux.py extract pssm-tp pssm-tn -raa raaCODE -o Train_fs -l 5
-python RPCT_linux.py extract pssm-tp pssm-tn  -o My_train -l 5 -r LVIMC-AGST-PHC-FYW-EDNQ-KR
-```
-#### 4. Search
-Search Hyperparameters of the target feature file through the grid function provided by LIBSVM (https://www.csie.ntu.edu.tw/~cjlin/libsvm/oldfiles/index-1.0.html).
-#### Command line
-```
-python RPCT_linux.py [search] [-d] document_name [-f] folder_name
+### 4. Search
+Search hyperparameters of the target feature file or folder through the grid function.
+##### Command line
+```bash
+$irap search -d document_name -f folder_name
 
 # optional arguments:
 #   -d    input the target feature file and output a single result of it, and you can not use this parameter and -f together.
 #   -f    input the target feature folder and output the Hyperparameters file which contains all results of the feature folder, and you can not use this parameter and -d together.
 ```
-#### Example
+##### Example
+```bash
+$irap search -d .\Train_fs\0001-t1s2-0123456.rap
+$irap search -f Train_fs
 ```
-python RPCT_linux.py search -d .\Train_fs\t1s2_rpct.fs
-python RPCT_linux.py search -f Train_fs
-```
-#### 5. Filter
-Filter the features of the target feature file through the IFS-RF method (Incremental Feature Selection based on the Relief-Fscore method). And output an ACC_Chart and a Feature_sort_file for the target feature file
-#### Command line
-```
-python RPCT_linux.py [filter] document_name [-c] c_number [-g] gamma [-cv] cross_validation_fold [-o] out_file_name [-r] random_number [-raac] out_file_name [-t] random_number
+### 5. Filter
+Filter the features of the target feature file through the IFS-RF method (Incremental Feature Selection based on the Relief-Fscore method). And output an Accuracy line chart and a feature sort file for the target feature file.
+##### Command line
+```bash
+$irap filter document_name -c c_number -g gamma -cv cross_validation_fold -o out_file_name -r random_number
 
 # optional arguments:
 #   document_name   input the target feature file name.
@@ -99,18 +150,16 @@ python RPCT_linux.py [filter] document_name [-c] c_number [-g] gamma [-cv] cross
 #   -cv             the cross validation fold of SVM, you can choose 5, 10 or -1 or define it by your experience.
 #   -o              input the out file name, and the ACC Chart and Feature sort file will be saved by defualt in current folder.
 #   -r              the random sampling number of Relief method.
-#   -raac           input the raac book name.
-#   -t              input the raac type and size.
 ```
-#### Example
+##### Example
+```bash
+$irap filter .\Train_fs\0001-t1s2-0123456.rap -c 128 -g 0.03125 -cv 5 -o t1s2 -r 30
 ```
-python RPCT_linux.py filter .\Train_fs\t1s2_rpct.fs -c 8 -g 0.125 -cv 5 -n 190 -o t1s2 -r 30 -raac raaCODE -t t1s2
-```
-#### 6. Filter Features File Setting
-Create a filtered feature file of the target feature file through the Feature_Sort_File which has been output in Filter function.
-#### Command line
-```
-python RPCT_linux.py [fffs] document_name [-f] feature_sort_file [-n] stop_feature_number [-o] out_file_name
+### 6. Filter Features File Setting
+Create a filtered feature file of the target feature file through the feature sort file which has been output in Filter function.
+##### Command line
+```bash
+$irap fffs document_name -f feature_sort_file -n stop_feature_number -o out_file_name
 
 # optional arguments:
 #   document_name    input the target feature file which has been chosen in Filter function.
@@ -118,15 +167,16 @@ python RPCT_linux.py [fffs] document_name [-f] feature_sort_file [-n] stop_featu
 #   -n               the stop feature number of target feature file, and you can find it in the ACC_Chart which has been created in Filter function (5).
 #   -o               input the out file name.
 ```
-#### Example
+##### Example
+```bash
+$irap fffs .\Train_fs\0001-t1s2-0123456.rap -f t1s2\Fsort-rf.txt -n 6 -o t1s2-6.rap
+$irap fffs .\Predict_fs\0001-t1s2-0123456.rap -f t1s2\Fsort-rf.txt -n 6 -o t1s2-6_pred.rap
 ```
-python RPCT_linux.py fffs .\Train_fs\t1s2_rpct.fs -f t1s2-ifs.txt -n 72 -o t1s2-72
-```
-#### 7. Train
-Train feature files through the LIBSVM.
-#### Command line
-```
-python RPCT_linux.py [train] [-d] document_name [-f] input_folder_name [-c] c_number [-g] gamma [-o] out_folder [-cg] Hyperparameters_name
+### 7. Train
+Train feature files through the SVM.
+##### Command line
+```bash
+$irap train -d document_name -f input_folder_name -c c_number -g gamma -o out_folder -cg Hyperparameters_name
 
 # optional arguments:
 #   -d    input the target feature file, and you can not use this parameter with -f and -cg together.
@@ -136,16 +186,16 @@ python RPCT_linux.py [train] [-d] document_name [-f] input_folder_name [-c] c_nu
 #   -o    if you choose the parameter -f, you should input a folder name, and if you choose the parameter -d, you should input a file name.
 #   -cg   the Hyperparameters file which has been created in Search function (4) or defined in Mhys function (14), and you can not use this parameter with -d, -c and -g together.
 ```
-#### Example
+##### Example
+```bash
+$irap train -d .\Train_fs\0001-t1s2-0123456.rap -c 128 -g 0.03125 -o t1s2-6.model
+$irap train -f Train_fs -o Models -cg Hys_Train_fs.txt
 ```
-python RPCT_linux.py train -d .\Train_fs\t1s2_rpct.fs -c 8 -g 0.125 -o t1s2
-python RPCT_linux.py train -f Train_fs -o .\Train_fs\t1s2_rpct.fs -cg Hyperparameters.txt
-```
-#### 8. Eval
-Evaluate feature files through the Cross-validation function provided by LIBSVM.
-#### Command line
-```
-python RPCT_linux.py [eval] [-d] document_name [-f] folder_name [-c] c_number [-g] gamma [-o] out_folder [-cg] Hyperparameters_name [-cv] cross_validation_fold
+### 8. Eval
+Evaluate feature files through the Cross-validation function.
+##### Command line
+```bash
+$irap eval -d document_name -f folder_name -c c_number -g gamma -o out_folder -cg Hyperparameters_name -cv cross_validation_fold
 
 # optional arguments:
 #   -d    input the target feature file, and you can not use this parameter with -f and -cg together.
@@ -156,16 +206,16 @@ python RPCT_linux.py [eval] [-d] document_name [-f] folder_name [-c] c_number [-
 #   -cg   the Hyperparameters file which has been created in Search function (4) or defined in Mhys function (14), and you can not use this parameter with -d, -c and -g together.
 #   -cv   the cross validation fold of SVM, you can choose 5, 10 or -1 or define it by your experience.
 ```
-#### Example
+##### Example
+```bash
+$irap eval -d .\t1s2-2.rap -c 128 -g 0.03125 -cv 5 -o t1s2-2.txt
+$irap eval -f Train_fs -cv 5 -o Eval_fs -cg Hys_Train_fs.txt
 ```
-python RPCT_linux.py train -d .\Train_fs\t1s2_rpct.fs -c 8 -g 0.125 -o t1s2
-python RPCT_linux.py train -f Train_fs -o Model_fs -cg Hyperparameters.txt
-```
-#### 9. ROC
-Draw the ROC-Cruve by sklearn.
-#### Command line
-```
-python RPCT_linux.py [roc] document_name [-c] c_number [-g] gamma [-o] out_file_name
+### 9. ROC
+Draw the ROC-Cruve by scikit-learn.
+##### Command line
+```bash
+$irap roc document_name -c c_number -g gamma -o out_file_name
 
 # optional arguments:
 #   document_name    input the target feature file.
@@ -173,60 +223,51 @@ python RPCT_linux.py [roc] document_name [-c] c_number [-g] gamma [-o] out_file_
 #   -g               the gamma of RBF-SVM, and you can not use this parameter with -f and -cg together.
 #   -o               input the out file name, and the ROC-Cruve will be saved by defualt in current folder.
 ```
-#### Example
+##### Example
+```bash
+$irap roc .\t1s2-2.rap -c 128 -g 0.03125 -o t1s2-roc
 ```
-python RPCT_linux.py roc .\Train_fs\t1s2_rpct.fs -c 8 -g 0.125 -o t1s2 -n 190
-```
-#### 10. Predict
+### 10. Predict
 Evaluate the target model with a feature files which from an independent datasets. And output a Evaluation_file and a Prediction_result for the target model.
-#### Command line
-```
-python RPCT_linux.py [predict] document_name [-m] model_name [-o] out_file_name
+##### Command line
+```bash
+$irap predict document_name -m model_name -o out_file_name
 
 # optional arguments:
 #   document_name    input the target feature file, and make sure it has the same reduce type with the target model.
 #   -m               input the target model file, and make sure it has the same reduce type with the target feature file.
 #   -o               input the out file name, and the predict result will be saved by defualt in current folder.
 ```
-#### Example
+##### Example
+```bash
+$irap predict .\t1s2-2_pred.rap -m .\t1s2-2.model -o t1s2.csv
 ```
-python RPCT_linux.py predict .\Predict_fs\t1s2_rpct.fs -m t1s2.model -o t1s2
-```
-#### 11. Res
+### 11. Res
 Reduce amino acids by personal rules. And output a personal RAAC list from size_2 to size_19.
-#### Command line
-```
-python RPCT_linux.py [res] aaindex_id
+##### Command line
+```bash
+$irap res aaindex_id
 
 # optional arguments:
 #   aaindex_id    the ID of physical and chemical characteristics in AAindex Database, and you can check it in aaindexDB folder in rpct folder or view it online.
 ```
-#### Example
+##### Example
+```bash
+$irap res CHAM830102
 ```
-python RPCT_linux.py res CHAM830102
-```
-#### 12. IntLen
-Choose the top-n classify model to participate in the Integrated-Learning which predict through majority vote mothod.
-#### Command line
-```
-python RPCT_linux.py [intlen] [-tf] train_feature_folder [-pf] predict_feature_folder [-ef] eval_file [-cg] Hyperparameters_name [-m] member
+### 12. Lblast
+Download the full-featured blast program at the fastest speed so that you can accidentally delete or damage blast-related functions. The download includes the sequence alignment program necessary for IRAP and the pdbaa alignment database.
 
-# optional arguments:
-#   -tf    input the train feature folder name.
-#   -pf    input the predict feature folder name which has been created by an independent datasets.
-#   -ef    input the eval result file name which has been created by Eval funtion and saved in eval_result folder.
-#   -cg    the Hyperparameters file which has been created in Search function (4) or defined in Mhys function (14).
-#   -m     the number of integrated-learning members.
+##### Command line
+
+```bash
+$irap lblast
 ```
-#### Example
-```
-python RPCT_linux.py intlen -tf Train_fs -pf Predict_fs -ef .\Eval_fs\Features_eval.csv -cg Hyperparameters.txt -m 10
-```
-#### 13. PCA
-Filter the features of the target feature file through the PCA method. And output an ACC_Chart and a Feature_sort_file for the target feature file.
-#### Command line
-```
-python RPCT_linux.py [pca] document_name [-c] c_number [-g] gamma [-o] out_file_name [-cv] cross_validation_fold
+### 13. PCA
+Filter the features of the target feature file through the IFS-PCASVD method (Incremental Feature Selection based on the Singular Value Decomposition Principal Component Analysis method). And output an Accuracy line chart and a feature sort file for the target feature file.
+##### Command line
+```bash
+$irap pca document_name -c c_number -g gamma -o out_file_name -cv cross_validation_fold
 
 # optional arguments:
 #   document_name    input the feature file name.
@@ -235,15 +276,15 @@ python RPCT_linux.py [pca] document_name [-c] c_number [-g] gamma [-o] out_file_
 #   -o               input the out file name, and the ACC Chart and Feature sort file will be saved by defualt in current folder.
 #   -cv              the cross validation fold of SVM, you can choose 5, 10 or -1 or define it by your experience.
 ```
-#### Example
+##### Example
+```bash
+$irap pca .\Train_fs\0001-t1s2-0123456.rap -c 128 -g 0.03125 -o t1s2-pca -cv 5
 ```
-python RPCT_linux.py pca .\Predict_fs\t1s2_rpct.fs -c 8 -g 0.125 -o t1s2 -cv 5
-```
-#### 14. Mhys
-Define Hyperparameters file for a target feature folder by your experience.
-#### Command line
-```
-python RPCT_linux.py [mhys] folder_name [-c] c_number [-g] gamma [-o] out_file_name
+### 14. Mhys
+Define hyperparameters file for a target feature folder by your experience.
+##### Command line
+```bash
+$irap mhys folder_name -c c_number -g gamma -o out_file_name
 
 # optional arguments:
 #   folder_name    input the train feature folder name.
@@ -251,71 +292,78 @@ python RPCT_linux.py [mhys] folder_name [-c] c_number [-g] gamma [-o] out_file_n
 #   -g             the gamma of RBF-SVM.
 #   -o             input the out file name, and the Hyperparameters file will be saved by defualt in current folder.
 ```
-#### Example
+##### Example
+```bash
+$irap mhys Train_fs -c 2 -g 0.125 -o Hys_2.txt
 ```
-python RPCT_linux.py mhys Train_fs -c 2 -g 0.125 -o Hys_2.txt
-```
-#### 15. Rblast
+### 15. Rblast
 Use the ray package for multi-threaded psiblast comparison.
-#### Command line
-```
-python RPCT_linux.py [rblast] folder_name [-o] out_folder_name
+##### Command line
+```bash
+$irap rblast folder_name -db blast_database_name -n num_iterations -ev expected_value -o out_folder_name
 
 # optional arguments:
-#   folder_name    input the target fasta folder which has been created in Read function (1).
-#   -o             input the out folder name, and the folder saved by default in PSSMs folder.
+#   folder_name  input the Fasta folder name which has been created in Read function (1).
+#   -db          choose the blast database, or you can make your database through Makedb function (17).
+#   -n           input the iteration number.
+#   -ev          input the expected value.
+#   -o           input the out folder name, and it will be saved by default in PSSMs folder.
 ```
-#### Example
+##### Example
+```bash
+$irap rblast train_p -db pdbaa -n 3 -ev 0.001 -o pssm-tp
+$irap rblast train_n -db pdbaa -n 3 -ev 0.001 -o pssm-tn
+$irap rblast predict_p -db pdbaa -n 3 -ev 0.001 -o pssm-pp
+$irap rblast predict_n -db pdbaa -n 3 -ev 0.001 -o pssm-pn
 ```
-python RPCT_linux.py rblast test_p -o pssm-rp
-```
-#### 16. Rsup
-Supplement blast when the Blast and Rblast functions miss some sequences.
-#### Command line
-```
-python RPCT_linux.py [rsup] folder_name [-o] out_folder_name
+### 16. Reduce
+Draw a reduced sequence diagram of the specified FASTA sequence.
+##### Command line
+```bash
+$irap reduce file_name -raa raacode -o out_file_name
 
 # optional arguments:
-#   folder_name    input the target fasta folder which has been created in Read function (1).
-#   -o             input the out folder name, and the folder saved by default in PSSMs folder.
+#   file_name    input the target fasta file which has been created in Read function (1).
+#   -raa         reduce amino acid code like 'LVIMC-AGST-PHC-FYW-EDNQ-KR'.
+#   -o           input the out folder name, and the folder saved by default in PSSMs folder.
 ```
-#### Example
+##### Example
+```bash
+$irap reduce .\Reads\train_p\1.fasta -raa LVIMC-AGST-PHC-FYW-EDNQ-KR -o selfraa.html
 ```
-python RPCT_linux.py rsup test_p -o pssm-rp
-```
-#### 17. Makedb
+### 17. Makedb
 Make blast database by makeblastdb function provided by BLAST+. You can make a personal datasets or choose a public database from Blast (https://ftp.ncbi.nlm.nih.gov/blast/db/).
-#### Command line
-```
-python RPCT_linux.py [makedb] datasets_name [-o] out_database_name
+##### Command line
+```bash
+$irap makedb datasets_name -o out_database_name
 
 # optional arguments:
 #   database_name    input the target fasta database, and make sure it located in the current folder.
 #   -o               input the out database name, and it will be saved by default in blastDB folder in rpct folder.
 ```
-#### Example
+##### Example
+```bash
+$irap makedb pdbaa -o pdbaa
 ```
-python RPCT_linux.py makedb pdbaa -o pdbaa
-```
-#### 18. View
+### 18. View
 View the RAAC Map of different types in target RAAC Book. And the result will be saved in a html file by pyecharts packages.
-#### Command line
-```
-python RPCT_linux.py [view] raac_book_name [-t] type_raac
+##### Command line
+```bash
+$irap view raac_book_name -t type_raac
 
 # optional arguments:
 #   raac_book_name    input the target RAAC book name.
 #   -t                input the target type which you want to view.
 ```
-#### Example
+##### Example
+```bash
+$irap view raaCODE -t 5
 ```
-python RPCT_linux.py view raaCODE -t 5
-```
-#### 19. Weblogo
-View the reduce weblogo of target pssm profile.
-#### Command line
-```
-python RPCT_linux.py [weblogo] pssm_file_name [-raa] raac_book_name [-r] reduce_type [-o] out_file_name
+### 19. Pmlogo
+View the reduce pssm logo of target pssm profile.
+##### Command line
+```bash
+$irap pmlogo pssm_file_name -raa raac_book_name -r reduce_type -o out_file_name
 
 # optional arguments:
 #   pssm_file_name    input the target pssm file path.
@@ -323,20 +371,42 @@ python RPCT_linux.py [weblogo] pssm_file_name [-raa] raac_book_name [-r] reduce_
 #   -r                input the target reduce type
 #   -o                input the out file name, and the file saved by default in current folder.
 ```
-#### Example
+##### Example
+```bash
+$irap pmlogo .\PSSMs\pssm-tp\1.pssm -raa minCODE -r 0001-t1s2 -o t1s2.html
 ```
-python RPCT_linux.py weblogo .\PSSMs\pssm-tp\1 -raa raaCODE -r t1s5 -o t1s5
-```
-#### 20. Check Blast Database
+### 20. Check Blast Database
 Check and remove the repetitive sequences in blast database.
-#### Command line
-```
-python RPCT_linux.py [checkdb] database_name
+##### Command line
+```bash
+$irap checkdb database_name
 
 # optional arguments:
 #   database_name    input the target blast database of FASTA format.
 ```
-#### Example
+##### Example
+```bash
+$irap checkdb pdbaa
 ```
-python RPCT_linux.py checkdb pdbaa
+
+## Usage For Windows
+
+You can input command in CMD to run IRAP GUI on windows platform.
+
+```bash
+$irap windows
 ```
+
+## Usage For Python
+
+You can import IRAP in PythonIDE.
+
+```python
+from irap import SVM as isvm
+from irap import Load as iload
+from irap import Read as iread
+from irap import Extract as iextra
+from irap import Evaluate as ieval
+from irap import Select as iselect
+```
+
